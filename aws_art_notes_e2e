@@ -1,0 +1,964 @@
+------------------------------------------------------------------------------------------------------------------------
+Cloud
+Cloud computing is the delivery of computing services—including servers, storage,
+databases, networking, software, analytics, and intelligence—over the Internet
+pay for what you use.
+------------------------------------------------------------------------------------------------------------------------
+
+Diffrent types of Cloud computing technology
+1) Private cloud.
+The data will be dedicated for their own organizations.
+
+2) Public cloud.
+A public cloud refers to a type of cloud computing where the resources and services are
+made available to the general public over the internet.
+
+3) Hybrid Cloud.
+A hybrid cloud is a type of cloud computing environment that combines a public cloud with
+a private cloud. The public cloud provides on-demand, scalable resources, while the private
+cloud provides more control and security for sensitive data and applications.
+------------------------------------------------------------------------------------------------------------------------
+Different types of cloud computing
+
+1) IaaS (Infrastructure as a service)
+Only infrastructure is provided by aws every thing is to be maintained by use.(eg:Ec2 instance)
+
+2) PaaS (Platforms as a service)
+Everything will be taken care by aws i,e scaling up and scaling down the infrastructure based on requirement you need to 
+deploy your application (eg:Elastick beanstalk)
+
+3) SaaS (Software as a service)
+A ready made software you pay for what you use, no need to take care of infrastructure.
+
+4) FaaS (Function as a service)
+Serverless functions which is used to run a piece of code (eg:Lamda)
+------------------------------------------------------------------------------------------------------------------------
+Region
+A cluster of data centers are peresent where we can connect and work on it.
+
+Availability Zones
+They are physically seperated locations and are connected with high bandwidth and low latency cables so one of them goes
+down the remaining will be working.
+
+Edge locations
+Rather then going to region to serve the use for an user the edge locations will store the most used data from that
+perticular location.
+When ever the user access the date it will first check in the edge locations which stores data less time if it is not
+available then it will search in the edge caches which will stores data for the longer period.
+
+Check for the number of regions, edge locations, edge cache.
+------------------------------------------------------------------------------------------------------------------------
+IAM (Identity Acces Manangment)
+Where we can create users and provide the permission for the users.
+
+Policies
+These are the permission given for the users to access the aws account.
+These can also use to give permissions for the roles.
+
+Roles
+These are the permissions given to communicate once resource to another resource i,e ec2 to access the s3 bucket.
+
+The best pratice is to creat the user account and use that account to access the aws account.
+
+Different types of services
+1) Global service.
+RDS, lamda, IAM, cloudfrount, route 53.
+2) Regional service.
+ECS, Elastic beanstalk, cloud watch, ec2.
+------------------------------------------------------------------------------------------------------------------------
+Different types of policies
+1) Identity based policy.
+1-a) Aws managed policy. (Total 989 policies)
+These policies are managed by the aws we cannot chnage those permissions we can only read those policies
+1-b) Custom Policy.
+The polices that are created by the users and managed by the users
+1-c) Inline policy
+These policy can be applicable for a pericular user. Thse can be added to a user by going to the user page.
+These polices are created & managed by the users. The inline polices are specified for the same user we cannont use for
+other users.
+
+ARN - AWS Resource Number.
+An AWS IAM (Identity and Access Management) custom policy consists of several
+components:
+1. "Sid"- A unique identifier for the policy statment.
+1. "Effect" - This specifies whether a policy allows or denies access.
+2. "Action" - This specifies on which resource what action are applicable.
+3. "Resource" - This specifies the AWS resources that the policy applies to.
+4. "Principal" - This specifies the AWS identity that the policy applies to.
+5. "Condition" - This specifies additional conditions under which the policy allows or denies
+access.
+6. Statement - The main body of the policy, containing one or more statements.
+7. Version - The current version is typically set to "2012-10-17".
+Each statement describes a specific permission or set of permissions
+All these components are defined in a JSON format and combined to form the policy.
+
+2) Resource based policy.
+We want give permissions to access once resource to another resource inside the aws we can use resourced policy.
+Once the creation of role is done we need to attach those roles to the services i,e EC2 instance for going to the actions.
+
+3) Session based policy.
+These are the permissions that are given to an user to access a resource for a given specfic time where we should he use
+the session token to access the resources.
+
+Assume role (Both should be performed)
+Through concole
+At the right corner scroll down the ID and select switch role there we need to menction the role arn ID and the user ID number
+and the identity name.
+
+Through CLI
+aws sts assume-role role-arn <arn-ID> --role-session-name <session_name> --> Enter this commnad
+A temperary Acess keys, Secrete keys, session token gets automatically created there are 2 methods to set this access, secret
+keys
+a) aws configure.
+b) By setting them as environment variables
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+export AWS_SESSION_TOKEN=
+------------------------------------------------------------------------------------------------------------------------
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::example-bucket/*"
+            ]
+        }
+    ]
+}
+------------------------------------------------------------------------------------------------------------------------
+MFA (Multi Factor Authentication)
+An extra layer of security for the aws account where user should provide the code that are getting generated for each 
+30 seconds while logging in.
+
+Applications that are supports - Microsoft Authenticator, Google Authenticator, Duo Mobiles.
+------------------------------------------------------------------------------------------------------------------------
+Access Advisor
+It will give the details about the resources that are accessed by an user.
+Get inside the user there we can find the details.
+------------------------------------------------------------------------------------------------------------------------
+Assignment
+one user should access only one s3 bucket.
+------------------------------------------------------------------------------------------------------------------------
+Cloudwatch:
+It will monitors the aws services based on the metrics.
+We can setup alarms.
+Using this we can use them for SnS, set autoscalling, add instance and take some actions i,e to stop instance, reboot the instance,
+terminate instances.
+
+cloudwatch-->alarms-->In alarms-->create alarm-->select the metric (EC2)--> pre-instance metrics--> select on which bases
+alarm should be triggered--> In the last we can setup actions.
+
+Cloudwatch has 3 phases
+1) In alaram.
+2) ok.
+3) Insufficient data.
+
+To get alarm for the mail we need to crete a topic to get alarms.
+User should subscribe for the topic.
+
+Cloudwatch events.
+1) Management evets
+Capture management operations performed on your AWS resources.
+
+2) Data events
+Log the resource operations performed on or within a resource.
+When ever some user add or delete objects to s3 bucket.
+3) Insight events.
+Identify unusual activity, errors, or user behavior in your account.
+To read trails/logs copy those and open it in json viwer inside the chrome.
+
+Cloudwatch logs: [/var/logs/messages]
+What are the things that are performed inside the ec2 instance we can moniter them using cloudwatch logs.
+------------------------------------------------------------------------------------------------------------------------
+Cloudtrail [/var/logs/messages]:Which is exports the logs from an ec2 machine ans dtore in s3 bucket.
+
+Which is used to moniter the aws console which user has performed what actions.
+By default it stores 90days, these are being stored in event history.
+createtail-->storge(s3bucket)
+Cloudtrail events.
+
+------------------------------------------------------------------------------------------------------------------------
+To expot ec2-instance logs to the aws concole
+
+step -1
+Create a role and give a policy called CloudWatchAgentServerPolicy
+step-2
+sudo yum install awslogs
+step-3
+update file cd /etc/awslogs/awscli.conf --> Update the region inside the file with your current region.
+step-4
+Go to the end of the file cd /etc/awslogs/awslogs.conf
+Update 
+log_grroup_name = EC2Logs
+file = /var/log/messages
+step-5
+sudo service awslogsd start
+sudo systemctl enable awslogsd
+------------------------------------------------------------------------------------------------------------------------
+
+Eventbridge:
+When ever we want to schedule a task that to stop, start, reboot instance we can use do it through eventbridge.
+------------------------------------------------------------------------------------------------------------------------
+How to trigger a alarm once the instance gets teminated in eventbridge.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+When ever we are working on the same netwrok we can use private Ip if both the aws server and the system is on different
+networks the we should be using public Ip's so that we can connect to the resource.
+------------------------------------------------------------------------------------------------------------------------
+VPC (Virtual private cloud): (CIDR.xyz)
+logically isolated section of the AWS Cloud.
+A virtual private cloud (VPC) is a virtual network that is dedicated to the user's AWS account.
+It enables the user to launch AWS resources into a virtual network that the user has defined.
+The user has complete control over the virtual networking environment, including the
+selection of IP address ranges, creation of subnets, and configuration of route tables and
+network gateways. VPCs provide a secure and scalable networking solution for applications
+running on AWS.
+It is also an region specfic.
+Subnets are availability zone specfic.
+------------------------------------------------------------------------------------------------------------------------
+Limitation of Vpc's (https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html)
+1) 5 vpc per region.
+2) 5 Internet gateways per region.
+3) 5 Elstic Ip addresses per region.
+4) 5 Nat gateways for a availability zone.
+6) 200 subnets per vpc.
+7) 200 NACL's per VPC
+8) 200 Route tables per vpc.
+9) 4 CIDR blocks for vpc.
+------------------------------------------------------------------------------------------------------------------------
+subnets:
+Subnets are used to segment the VPC network into smaller, more manageable sections which will sheare the cidr blocks.
+Public Subnets:
+The resouces which are created inside these public subnets those can be accessed through the internet and they can communicate
+to the outside world
+Private subnets:
+The resouces which are created inside these cannot be accessed through the internets where we can use jump servers to establish
+the connection.
+Resources can access the internet and internet cannot access the resurces (One way connection)
+------------------------------------------------------------------------------------------------------------------------
+Components of Vpc
+1) subnets
+Subnets are often used in large organizations to segment a network into smaller, more manageable parts. Each subnet has
+a unique IP address range and can be connected to other subnets through routers.
+2) CIDR blocks
+CIDR, short for Classless Inter-Domain Routing, is a method for allocating IP addresses to the subnets.
+
+
+180.0.0.0/16
+= 2^(32-16)
+= 65,536 --> Max number of VPC 
+=2^(32-28)
+=2^4
+=16 --> Min number of vpc
+16=masking value
+
+3) Internet Gateway
+Which are used to establish the connection between the services to the internet.
+4) NAT gateways.
+By using a NAT gateway, devices on the private network can communicate with the internet, but incoming traffic from
+the internet is not allowed to reach the private devices directly.
+NAT gateways also have the added advantage of providing an extra layer of security, as they can block incoming traffic,
+making it harder for hackers to find and exploit vulnerabilities on the devices on the private network.
+Even the nat gateways are created inside the public networks.
+5) Route table.
+Route tables used to manage traffic in virtual private cloud (VPC) environments. they allow the creation of custom routes
+to direct traffic to different destinations, such as internet gateways, NAT gateways
+6) Elsatic Ip
+Which will assigne a dedicated public ip addresses to the resouces, the services gets stop & started these will have
+unchanged public Ip's.
+7) Security Groups.
+These are the extra layer of protection at the instance level.
+8) NACL's
+These are the extra layer of security at the subnet level.
+------------------------------------------------------------------------------------------------------------------------
+VPC peering.
+Is is used to establish the connection between two ec2-instances which are inside the different vpc with in the same account
+or with in the different account privately.
+
+step-1
+peering-->Give name-->select the requseter vpc id-->select the region,account-->select the acceptor Vpc_id-->tags(optional)-->create
+step-2
+once the above steps are done requester should accept the request.
+step-3
+Establish the route tables among the vpc's to get communication.
+------------------------------------------------------------------------------------------------------------------------
+Limitations of vpc peering:
+1) VPC peering is limited to a maximum of 50 peering connections per VPC.
+2) VPC peering does not support transitive peering relationships, meaning that if VPC A is peered with VPC B, and VPC B 
+is peered with VPC C, VPC A and VPC C cannot communicate directly.
+3) VPC peering does not support overlapping IP ranges, meaning that the CIDR blocks of the peered VPCs cannot overlap.
+4) It is very difficult to establish peering connection if there are more then 4 ec2-instances.
+------------------------------------------------------------------------------------------------------------------------
+Transit gateway
+Which is used to establish the communication between the two different ec2-instances which are inside a different VPC's.
+Which is a centralized point of conncetion for routing tarffic between two ec2-instances at 2 different VPC's.
+
+step-1
+while creating the give a name and the autonomous system number ranging from 64512-65534 or 4200000000-4294967294.
+step-2
+create transit gateway attachments inside for each vpc you need to select separately.
+step -3
+Adding routes to establish communication.
+------------------------------------------------------------------------------------------------------------------------
+Difference between peering and transit gateway connection.
+If there are many ec2-instances that are running its is very difficult to establish the peering connection between them,
+for each vpc we need to establish peering connection separately where as in transit gateway once we establish a centralized 
+connection among all the vpc's using transit gateway we can establish communication among all the ec2-instances.
+------------------------------------------------------------------------------------------------------------------------
+VPC Endpoint.
+A VPC endpoint is a way to connect to a service within a Virtual Private Cloud (VPC) without going over the internet.
+This improves security and reduces the risk of data transfer costs.
+
+There are two types of VPC endpoints: interface endpoints and gateway endpoints.  while gateway endpoints are powered by a gateway.
+eg: EC2-instance to read the s3 buckets.
+Gateway endpoint is a networking concept that acts as an entry or exit point for data between different networks 
+or systems, often used to enable secure and controlled communication between them.
+Interface endpoints are powered by Elastic Network Interfaces (ENIs),
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Firewalls inside the AWS:
+There are 2 firewall inside the aws i,e NACL and Security Groups.
+Difference between NACL's and Security Groups.
+NACL's:
+1) NACL is optional.
+2) It is a firewall at subent level.
+3) It will have both allow and deny rules i,e where you can allow & deny a range of CIDR block.
+4) It is stateless. Where we need to allow inbound and outbound rules seperately. We can saperately allow the incomming and
+the outgoing communication separately.
+Example: If a request comes through port 80. it should be
+explicitly indicated that its outgoing response would be the
+same port 80.
+
+Security Groups:
+1) It is requires for instaces.
+2) It is a firewall at instance level.
+3) It will have only allow rules i,e where you can have allow rule for a CIDR block.
+4) It is statefull. i,e If you allow the incomming communication the outgoing communication will be automatically established.
+Example: If the incoming port of a request is 80. the outgoing
+response of that request is also 80 (it is opened automatically)
+by default.
+------------------------------------------------------------------------------------------------------------------------
+VPC Flow logs:
+VPC flow logs is a feature of Amazon Virtual Private Cloud (VPC) that enables the administrator to capture information
+about the IP traffic going to and from network interfaces in the VPC. This information can be used to troubleshoot 
+network issues, security group rule changes, and to understand overall traffic patterns.
+------------------------------------------------------------------------------------------------------------------------
+AWS Private link:
+PrivateLink also allows for access to services without the need to use public IP addresses or NAT gateways. It supports 
+a variety of AWS services including Amazon S3, Amazon RDS, and Amazon SQS.
+If we want to access the resources that are located inside a vpc that is located in some other account.
+------------------------------------------------------------------------------------------------------------------------
+AWS client VPN:
+AWS Client VPN is a fully-managed, elastic VPN service that enables you to securely access your AWS and on-premises resources.
+It allows you to establish a secure, encrypted connection to your resources by using the OpenVPN or IKEv2 protocol.
+
+AWS Client VPN can be used to connect to resources in your Amazon Virtual Private Cloud (VPC) or on-premises data centers 
+and is a cost-effective and secure solution for remote access to your resources.
+
+It can be integrated with other AWS services like AWS Directory Service, Amazon CloudWatch, and AWS CloudTrail to provide
+additional security, monitoring and logging capabilities.
+------------------------------------------------------------------------------------------------------------------------
+Site to site VPN & Direct connect:
+
+site to site VPN
+• Connect an on-premises VPN to AWS
+• The connection is automatically encrypted
+• Goes over the public internet
+
+Direct Connect:
+• Establish a physical connection between on-premises and AWS
+• The connection is private, secure and fast
+• Goes over a private network
+• Takes at least a month to establish
+------------------------------------------------------------------------------------------------------------------------
+AWS client VPN:
+• Connect from your computer using OpenVPN to your private network in AWS and
+on-premises
+• Allow you to connect to your EC2 instances over a private IP (just as if you were in
+the private VPC network)
+• Goes over public Internet
+
+(Amazon Web Services (AWS) Client VPN is a managed client-based VPN service that enables secure access to your 
+AWS resources and resources in your on-premises data centers. It allows you to securely connect users to your network,
+regardless of their location, using a VPN client. It provides a secure and seamless connection to your resources,
+without the need for a VPN device or the ongoing maintenance of the infrastructure.
+It supports both IKEv2 and OpenVPN protocols.)
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+EC2-instances:
+AMI (Amazon machine image)
+It is the backup of the total ec2-instance is called ami.
+
+How to create instances with the same ami inside other regions:
+We need to copy the ami from the created rgion to a perticular region where we want to create a instance.
+
+------------------------------------------------------------------------------------------------------------------------
+t2.medium
+t=Instance Class
+2=Generation
+medium=size
+
+Types of instances:
+1. General Purpose: These instances are suitable for a wide range of applications and provide a balance of compute,
+memory, and network resources. Examples include the T2, M5, and A instances.
+2. Compute Optimized: These instances are designed for compute-intensive workloads, such as high-performance computing 
+and processing power. Examples include the C5 and C5d instances.
+3. Memory Optimized: These instances are designed for memory-intensive workloads, such as large relational databases 
+and in-memory caches. Examples include the R,X and Z instances.
+4. GPU Instances: These instances are designed for applications that require GPU resources, such as machine learning 
+and gaming. Examples include the P3 and G4 instances.
+5. Storage Optimized: These instances are designed for workloads that require high levels of storage performance and 
+capacity. Examples include the I,D and H instances.
+
+Purchasing options in aws:
+
+1) On-Demand: Pay for instances by the hour or by the second, with no long-term commitments or upfront payments.
+2) Reserved Instances: Make a low, one-time, upfront payment for a capacity reservation and receive a significant 
+   discount on the hourly usage charge for the instance.
+3) Convertible reserved instance: Where the users at least can change ther ec2-instances when they reserved the instance.
+4) Spot Instances: Bid on spare Amazon EC2 capacity, which can provide significant savings on your computing costs.
+5) Dedicated Hosts: A physical EC2 server dedicated for your use, you can use this option to have full control over 
+   the placement of instances and visibility of the underlying hardware.
+6) Savings Plans: This option provides a discount on the hourly usage charge of EC2 instances, regardless of which
+   purchase option you choose. users can get 73% of discounts if they reserved the instance for 3 years, users should
+   reserve the instance for 1 to 3 years.
+------------------------------------------------------------------------------------------------------------------------
+EBS (Elastic Block Storage)
+They are zone specfic.
+The backup of total volume is known as EBS.
+
+------------------------------------------------------------------------------------------------------------------------
+How to create EBS volume out off a snapshot.
+snapshort-->Actions-->create volume from snapshot.
+------------------------------------------------------------------------------------------------------------------------
+Steps involves in attaching EBS volumes:
+step-1
+Creating an EBS volume
+step-2
+Attching the EBS volume to the ec2-instance.
+step-3
+Mounting the EBS on e2c-instance.
+lsblk -f --> To check the file system.
+command-1 (Formating into a perticular file system) xfs & ext4
+mkfs -t <file_system> <Device_attached>
+eg:sudo mkfs -t xfs /dev/xvdf
+command-2 (Mount path generally preferred is /mnt and creat a directory inside the /mnt directory)
+eg:mount /dev/xvdf /mnt/data
+
+umount /mnt/data --> To unmount the volume user should be outside the directory.
+------------------------------------------------------------------------------------------------------------------------
+Types of EBS Volumes:
+1) General Purpose SSD.
+volume size will be 1GB to 16TB
+2) Provisioned iops SSD.
+• volume size will be 4GB to 16TB
+• We use when we want larger input and output data.
+3&4) Throughput optimized HDD & clod HDD
+• Cheaper than SSD options & also less performant
+• This will have less-frequent access
+• volume size will be 500GB-16TB
+• Cannot be a boot volume
+5) Magnetic
+• LOW storage cost
+• used for workloads where performance is not important or data is infrequently accessed
+• Volume see ot Min IGB Max 1TB
+------------------------------------------------------------------------------------------------------------------------
+Difference between EBS, EBS & s3
+		EBS 						EFS 							s3
+* Zone specfic					* Region Specfic					* Global Specfic.
+* Attched to single ec2-instance		* Attched to multiple ec2-instance			* Objects storage.
+* Storage usage is limited    			* There is no limit of storage usage			* users can access through the URL's & ec2-instances.
+* Elastic Block Storage				* Elastic File storage
+------------------------------------------------------------------------------------------------------------------------
+EFS (Elastic file storge)
+* EC2 to communicate with the efs nfs port 2049 should be opened.
+* To select the efs while creating the ec2-instance subnets should be selected.
+* We cannot take the snapshot of the EFS volumes.
+------------------------------------------------------------------------------------------------------------------------
+How to attach the EFS volume to the existing ec2-instance.
+yum install -y amazon-efs-utils
+yum install -y nfs-utils
+------------------------------------------------------------------------------------------------------------------------
+User data:
+Where we can run some commands & scripts insde the ec2-instance while creating.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Elastic Load Balancer (ELB)
+
+In Amazon Web Services (AWS), a load balancer is a service that automatically distributes incoming web traffic across
+multiple Amazon Elastic Compute Cloud (EC2) instances. This can help to ensure that your application remain available
+and responsive, even under heavy loads.
+Types of load balancers:
+1) Classic load balancer:
+
+A Classic Load Balancer in Amazon Web Services (AWS) is an older type of load balancer that is best suited for simple load 
+balancing of Transmission Control Protocol (TCP).
+
+2) Application load balancer:
+• Works on a protocol of HTTP & HTTPS.
+• Works at the request level.
+• Supports the target based mechanism.
+
+3) Newtork load balancer:
+• Works on a protocol of TCP & UDP.
+• Workes at the connection level.
+• Doesnot supports the target based mechanism.
+• Which can handle million of requests per second.
+
+4) Gateway load balancer:
+Support for both IPv4 and IPv6 traffic Gateway Load Balancer in Amazon Web Services (AWS) is a new type of load balancer that
+is optimized for routing traffic to and from virtual private clouds (VPCs) and on-premises networks.
+It allows you to route traffic between different VPCs and on-premises networks.
+
+• Automatic failover to ensure high availability
+• Ability to route traffic based on IP address ranges and protocols
+• Support for custom routing policies
+• Integration with AWS PrivateLink for secure, private connectivity to services
+• Support for VPC peering, transit gateway, and VPN connections
+
+ALB (Application load balancer)					NLB (Network Load balancer)
+* Works on a protocol of HTTP & HTTPS.				* Works on a protocol of TCP & UDP.
+* Works at the request level.					* Workes at the connection level.
+* Supports the target based mechanism.				* Doesnot supports the target based mechanism.
+								* Which can handle million of requests per second.
+
+Load balancers can make health checks and ensuring that traffic is only sent to healthy instances. At it can create instances
+across all the availability zones so that one goes down other can serve the traffic.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+• An Application Load Balancer functions at the application layer, (Layer 7 of OSI Model)
+• Components of ALB: Load Balancer, Listener, Target Groups
+• The default routing algorithm is round robin, but you can also use least outstanding requests.
+• Application Load balancer supports for redirecting requests from one URL to another.
+• Application Load balancer supports for registering Lambda functions as targets
+• Application Load Balancer supports authentication of users of your applications through their corporate or social identities 
+before routing requests.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "<h1>Hello World from Server 1</h1>" > /var/www/html/index.html
+echo "<h1>IP: $(hostname -s)</h1>" >> /var/www/html/index.html
+
+steps:
+
+step 1:
+Creating the target groups --> Register the targets-->include as pending below.
+step 2:
+creating load balancer--> select the target group.
+step 3:
+To provide the path based mechanism edit the listner rules.
+------------------------------------------------------------------------------------------------------------------------
+Autoscaling:
+It can automatically increase or decrease the number of instances based on traffic on your application.
+
+Desired capacity:
+Minimum capacity:
+maximum capacity:
+
+type-1 Dynamic scaling policy:
+Where we can define a set of rule where it will automatically adjust the resources based on rule i,e cpu, memory & storage.
+
+type-2 Predictive scaling policy:
+Where it will predict the traffic based on the workloads and scales the resources.
+
+type-3 scheduled actions:
+On the set timings using cornjob the resources are scales up and scales down.
+
+launch template:
+In this method we should select the linux flavour, instance type, security group, ebs volume, etc.
+It Can be adjustable.
+
+launch configuration:
+In this method we should select the ami of the instance.
+Once it is created it cannot be changed.
+
+steps:
+
+steps 1:
+create a launch templete
+step 2:
+create autoscaling group--> select the availability zones-->select desire, minimum, maximum capacity of instances.
+step 3:
+creating the autoscaling group.
+------------------------------------------------------------------------------------------------------------------------
+Stickiness in load balancing:
+Stickiness, also known as session affinity, is a technique used in load balancing to ensure that requests from a 
+specific client are sent to the same server, rather than being distributed randomly across all servers. 
+This is typically done by using a cookie or IP address to identify the client, and then directing all requests 
+from that client to the same server. Stickiness can be useful in certain scenarios, such as when a client needs 
+to maintain state or access data that is stored on a specific server. However, it can also lead to an uneven 
+distribution of load across servers, and may not be desirable in all cases.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+s3 (Simple storage service)
+
+s3 buckets are region specific where as the file inside an s3 bucket can be access across all the regions.
+Limitations of s3 bucket:
+• 1B to 5TB.
+• 5GB at single point of upload more then that upload by multi part upload.
+• 100 buckets per account.
+
+Billing: 
+S3 usage is billed based on the amount of data stored, data transferred, and number of requests made.
+
+Rules for s3 bucket naming:
+
+• Bucket names must be unique across all of Amazon S3.
+• Bucket names must be between 3 (min) and 63 (max) characters long.]
+• Bucket names can consist only of lowercase letters, numbers, dots (.), and hyphens (-1
+• Bucket names must begin and end with a letter or number.]
+• Bucket names must not contain two adjacent periods.
+• Bucket names must not be for atted as an IP address (for example, 192.168.5.4).
+------------------------------------------------------------------------------------------------------------------------
+How to set the file inside the s3 bucket are accessed by the public.
+
+step-1:
+Unchecke the mark block public access.
+step-2:
+Write a policy and add it over the properties in s3 bucket, use aws policy generator to create policy.
+"Resource": "arn:aws:s3:::mys3bucket-1283t8/*" --> make sure to add a * at the end.
+
+------------------------------------------------------------------------------------------------------------------------
+Static web hosting in s3 bucket:
+Users can access the files inside the s3bucket with the same url.
+steps
+------------------------------------------------------------------------------------------------------------------------
+Versioning in s3 bucket:
+
+Once versioning is enabled for a bucket, it applies to all objects in the bucket. When you enable versioning for a bucket,
+Amazon S3 automatically archives all versions of an object (including all writes and deletes) in the bucket.
+
+If you delete an object when versioning is enabled, Amazon S3 inserts a delete marker, rather than permanently deleting
+the object.
+------------------------------------------------------------------------------------------------------------------------
+Storage classes in s3bucket/s3 lifecycle:
+To create life cycle rule go to managements set lifecycle rules.
+
+1) Standard:
+By default it will take standard storage class if we didn't menction the life cycle. When we want to access the files
+frequently then we will be storing those files in standard.
+
+2) Standard Infrequent Access:
+The files which we access the frequently but have less latency compare to standard with less cost.
+
+3) one Zone IA:
+The files which are stored are the zone specific which cannot be accessed globally.
+
+4) Glacier Instant Retrievel:
+The files which are stored inside this storage class are accessed 90days.
+
+5) Glacier Flexible Retrievel:
+Audit time will be 5-12hrs time for latency is 1 to 5 min stores more then 180days.
+
+6) Glacier Deep Archive:
+Audit time is 48hrs and files are stored more then 180days.
+
+7) Intelligent tiering:
+Files will be stored based on the access patterns.
+If the user access the files frequently they will be stored at standard or standard IA, if user doesn't access frequently
+they will be stored inside glacier storage class.
+------------------------------------------------------------------------------------------------------------------------
+How to enable lifecycle rules:
+While adding a object we should enable the lifecycles.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+s3 security:
+
+1. Encryption
+a. Server side encryption
+a1. SSE -s3
+It is completed by aws user doesnot have permissions to modify and manage.
+a2. SSE-KMS
+User have permission to modify and manage but key is created by aws.
+a3. SSE-CMK
+Customer managed keys
+b. Client side encryption.
+
+2. Access permisssions:
+a. Bucket ploicy
+b. ACl (access control list)
+b1. Bucket acl
+b2. Object acl
+c. Presigned URL's (object level)
+Which provide permission for the users to access the objects in a bucket for a given period of time.
+Where we can generate this using CLI's
+command: aws s3 presign <object s3 URI> --expires-in <time in sec>
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Replication in s3bucket:
+steps:
+step-1:
+Get inside the bucket-->Go to management
+step-2:
+Create replication rule
+step-3
+select the objets to be replicated
+step-4
+choose dest bucket
+step-5
+Choose/create iam role
+step-6:
+select encryption if objects are already encrypted. If required enable bucket versioning.
+------------------------------------------------------------------------------------------------------------------------
+Static web hosting:
+Which provides a static web content for the user.
+------------------------------------------------------------------------------------------------------------------------
+Server side encryption:
+When an user adds file/objects to an s3bucket server will encrypt file by itself.
+
+Client side encryption:
+Where the users will encrypt the files/objects and adds into an s3bucket.
+------------------------------------------------------------------------------------------------------------------------
+How to map the custom domain with s3bucket endpoint (https://youtu.be/KT611GDqDCM)
+------------------------------------------------------------------------------------------------------------------------
+How to upload a file whose size is more then 5GB:
+------------------------------------------------------------------------------------------------------------------------
+Lamda: (Region specific)
+AWS Lambda is one such serverless compute service. Therefore, you don't need to worry about which AWS
+resources to launch, or how will they manage them.
+
+Serverless compute service when ever the trigger get executed the lamda get initiated.
+eg: When a user adds a image to compress image automatically.
+
+Create a function.
+add a trigger (adding a file to s3 bucket).
+
+limitations:
+Any code that can be executed within 15min.
+
+Billing:
+* No of triggers.
+* How much time a function executed.
+
+Runtime or Different coding languages supporter by lamda to create a function:
+1) Golan
+2) Nodejs
+3) python
+4) java
+5) ruby
+6) .Net
+Where we can use boto3 which is a software code development kit.
+------------------------------------------------------------------------------------------------------------------------
+Cloudwatch alaram to take ebs volume
+------------------------------------------------------------------------------------------------------------------------
+sqelectron --> which this tool we can connect to an rds database befor that should be installed locally.
+RDS(Relation Database Serive)
+Where we can create a SQl database that is managed by aws.
+Managed by aws i,e aws will make sure it will avaliable for all the regions & availability zones.
+The resources should be taken care by us i,e what kind of instance, EBS volumes.
+
+SQL RDS supported by aws
+1) Mysql
+2) PostgresSQL
+3) MariaDB
+4) Oracle.
+5) Microsoft SQL.
+6) Amazon Arora.
+6) Amazon Redshift (Different aws service)
+
+NOSQL RDS supported by aws
+1) DynamoDB.
+------------------------------------------------------------------------------------------------------------------------
+Advantage over using RDS versus deploying DB on EC2:
+
+1. Ease of use: RDS simplifies the process of setting up, operating, and scaling a relational
+database, allowing you to focus on your application instead of the infrastructure.
+2. Automatic backups: RDS automatically performs regular backups of your database,
+making it easy to recover from accidental data loss.
+3. High availability: RDS can automatically failover to a standby replica in the event of a
+primary instance failure, minimizing downtime.
+4. Scalability: RDS allows you to easily scale your database up or down as needed, without
+the need to manually reconfigure the underlying infrastructure.
+5. Security: RDS provides several security features such as network isolation, encryption of
+data at rest, and encrypting data in transit.
+6. Cost-effective: RDS is a cost-effective option as it eliminates the need to invest in and
+manage the underlying infrastructure, and you only pay for the resources you use.
+------------------------------------------------------------------------------------------------------------------------
+How to connect the ec2-instance with RDS service:
+Step-1:
+select a engine and provide necessary settings & password create 
+step-2:
+RDS endpoint get created and provide the below commands
+sudo amazon-linux-extras install postgresql10 --> Command to install postgres in amazon linux.
+
+General:
+psql \
+   --host=<Endpoint_url> \
+   --port=5432 \
+   --username=postgres \
+   --password \
+   --dbname=postgres
+
+eg:
+psql \
+   --host=database-1.ckw228xgvmxb.ap-south-1.rds.amazonaws.com \
+   --port=5432 \
+   --username=postgres \
+   --password \
+   --dbname=postgres
+
+Eg to create table:
+   CREATE TABLE accounts (
+   	user_id serial PRIMARY KEY,
+   	username VARCHAR ( 50 ) UNIQUE NOT NULL,
+   	password VARCHAR ( 50 ) NOT NULL,
+   	email VARCHAR ( 255 ) UNIQUE NOT NULL,
+   	created_on TIMESTAMP NOT NULL,
+           last_login TIMESTAMP
+   );
+------------------------------------------------------------------------------------------------------------------------
+How to add user to a created database in aws:
+
+To connect to instance - psql -U postgres -h localhost
+list all database \l or \list
+create database - create database mydatabasel
+create user - CREATE USER userl WITH ENCRYPTED PASSIORD 'userl@123'
+list users - \du
+give privileges - GRANT ALL PRIVILEGES ON DATABASE mydatabasel TO user1
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Selecting a Database:
+1. Volume :- How much ammount of storage TB/PB
+2. Verity :- Sequel or non sequel database
+3. Velocity :- How much fast the data should be read to an application.
+4. Based on Read/write velocity.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Lamda:
+Function as a service infra is managed by aws when a functio is triggered aws will create an infrastructure for us and once
+its completed infra will be terminated we pay only for the time which we used.
+Adventages:
+1. No maintainance.
+2. Pay as you use.
+3. High avaliblity.
+4. Scalability.
+Lamda supported runtimes:
+1. Python.
+2. Java.
+3. .Net.
+4. Golang
+5. Ruby.
+6. Nodejs.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+
+Route53:
+
+Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service offered by Amazon Web Services.
+It is designed to give developers and businesses an extremely reliable and cost-effective way to route end users to
+Internet applications by translating domain names to the IP addresses of the application's endpoint.
+• DNS is a collection of rules and records which helps clients understand how to reach a server through URIs.
+
+Records in route53:
+• A (Address) record: maps a domain name to an IP address.
+• AAAA (IPv6 address) record: maps a domain name to an IPv6 address.
+• CNAME (Canonical Name) record: maps a subdomain to another domain name.
+• MX (Mail exchange) record: maps a domain name to the mail server that is responsible for receiving email for that domain.
+• Alias record: An Alias record in Amazon Route 53 is a special type of record that maps a domain name or subdomain to 
+another AWS resource, such as an Amazon S3 bucket, an Elastic Load Balancer, or a CloudFront distribution.
+
+Routing Policies:
+• Simple Routing policy: It route traffic to a single ip address.
+• Weighted Routing Policy: Which will routes traffic to a ip address based on the weights.
+• Latency-based Routing Policy: Route 53 routes traffic to the ip address that provides the lowest latency
+for the end user.
+• Failover Routing Policy: Route 53 routes traffic to a primary ip address, and if it is unavailable, it routes traffic 
+to a secondary ip address.
+• Geolocation Routing Policy: Route 53 routes traffic to an ip address based on the geographic location 
+of the end user.
+
+Hosted zones:
+A hosted zone is a container for records, and records contain information about how you want to route traffic for
+a specific domain, such as example.com, and its subdomains (acme.example.com, zenith.example.com).
+A hosted zone and the corresponding domain have the same name.
+
+There are two types of hosted zones:
+• public hosted zone: Is a container that holds information about how you want to route traffic on the internet
+for a specific domain, such as example.com, and its subdomains (acme.example.com, zenith.example.com). 
+After you create a hosted zone, you create records that specify how you want to route traffic for the domain and subdomains.
+• private hosted zone: Is a container that holds information about how you want Amazon Route 53 to respond to DNS queries
+for a domain and its subdomains within one or more VPCs that you create with the Amazon VPC service.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+Elastic Beanstalk:
+It is an SaaS infrastructure.
+Amazon Elastic Beanstalk is a fully managed service provided by Amazon Web Services
+(AWS) for deploying, running, and scaling web applications and services developed with
+Java, .NET, PHP, Node.js, Python, Ruby, Go, and Docker on familiar servers such as Apache,
+Nginx, Passenger, and IIS. It takes care of provisioning the infrastructure, deploying the
+application, and monitoring the application and underlying resources.
+------------------------------------------------------------------------------------------------------------------------
+How to integrate elastic beanstalks with jenkins:
+------------------------------------------------------------------------------------------------------------------------
+Code commit - alternative for github
+code build - To build artifacts
+code deploy - To deploy for a environment.
+code pipeline - alternative for jenkins pipeline.
+------------------------------------------------------------------------------------------------------------------------
+KMS key management service
+It is a fully managed service that makes it easy for you to create and control the encryption keys used to encrypt your data.
+KMS provides a secure environment for the storage and management of encryption keys, and allows you to use those keys to 
+encrypt and decrypt data within your application or service.
+
+Types of encryption:
+1) Data at rest.
+2) Data at transit.
+------------------------------------------------------------------------------------------------------------------------
+CloudFormation:
+Which is an IAC(Infrastructure as a code) tool where we can create infrastructure using code.
+cloudformation supported file formation- yaml or json
+cloudformation can supports only supports for AWS.
+------------------------------------------------------------------------------------------------------------------------
+Cognito:
+Amazon Cognito is a service provided by Amazon Web Services (AWS) that allows developers to add user sign-up, sign-in,
+and access control to their web and mobile applications.
+------------------------------------------------------------------------------------------------------------------------
+Cloudfrount:
+Amazon CloudFront is a web service that speeds up distribution of your static and dynamic web content,
+such as .html, .css, .js, and image files, to your users. CloudFront delivers your content through a
+worldwide network of data centers called edge locations. When a user requests content that you're
+serving with CloudFront, the request is routed to the edge location that provides the lowest latency (time
+delay), so that content is delivered with the best possible performance.
+• If the content is already in the edge location with the lowest latency, CloudFront delivers it
+immediately.
+------------------------------------------------------------------------------------------------------------------------
+Api-gateway:
+
+API or Application Programming Interface is a medium or a software mediator which helps two applications
+to communicate with each other.
+------------------------------------------------------------------------------------------------------------------------
+1) API GATEWAY DEMO I Create API ENDPOINT to fetch S3 DATA using LAMBDA FUNCTION I PYTHON BOT03 - https://youtu.be/_RpGkToww2M
+2) How to host a dynamic website on AWS EC2 instance 11 How to deploy a php website on AWS EQ instance - https://youtu.be/QtdbGIvLJKo
+------------------------------------------------------------------------------------------------------------------------
+WAF (Web application firewall):
+Internet facing load balancer:
+Internal facing load balancer:
+Control tower:
+Nat gateway:
+Nat instance:
+------------------------------------------------------------------------------------------------------------------------
+Important vedio of creating domain and making all the configurations
+https://youtu.be/kvlSep7m7Uk
+How to Point Our Route 53 Domain Name to the Application Load Balancer
+https://youtu.be/JQP96EjRM98 - Watch this vedio.
+
+sudo yum install -y httpd
+sudo systemctl start httpd
+sudo systemctl enable httpd
+steps
+in route53 --> hosted zones-->select domain name-->name(www)-->alias--> region,AZ-->load balancer DNS
+------------------------------------------------------------------------------------------------------------------------
+
+
+
