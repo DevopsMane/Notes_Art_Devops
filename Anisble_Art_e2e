@@ -1,0 +1,457 @@
+---------------------------------------------------------------------------------------------------------------
+Anisble - 2.12
+Ansible is an open-source IT configuration managment, deployment & orchestrations tool.
+It allows a central location to perform these tasks.
+It will aslo helps in deploying the applications to a group of machines based on the configuration written
+inside the hosts file i,e based on the group.
+---------------------------------------------------------------------------------------------------------------
+24-12-22 - class 1
+---------------------------------------------------------------------------------------------------------------
+Installation:
+
+Redhat: (advisable)
+
+sudo yum update -y
+sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo yum install ansible
+
+Ubuntu:
+
+sudo apt add-repository ppa:ansible/ansible
+sudo apt update
+sudo apt install ansible -y
+---------------------------------------------------------------------------------------------------------------
+Path: /etc/ansible
+---------------------------------------------------------------------------------------------------------------
+Prerequisite for ansible controller is python version more then version-3 and ansible should be installed.
+
+Prerequisite for host machines are python should be installed, proper ssh connection to the host machines
+from the controller.
+
+We can perform a set of actions inside th host machine by the following
+
+1) AD-HOC
+Its an cli command where we can perform actions
+2) Inventory
+Its just a file with an extenction of .yaml when ever we want to perform a set of actions inside the host
+we use inventory
+3) Roles
+When we want the parameterized the inventory file we use roles to perform actions.
+---------------------------------------------------------------------------------------------------------------
+Ansible architecture.
+1. controle node:
+The control node is the machine where Ansible is installed and from which Ansible manages other remote machines.
+2. Modules:
+Ansible works by connecting to your nodes and pushing out scripts called "Ansible modules" to them, Ansible then
+executes these modules (over SSH by default), and removes them when finished.
+3.Plugins: 
+While modules execute on the target system, plugins execute on the control node.Plugins Offer options and 
+extensions for the core features Of Ansible.
+4.Inventory: 
+Inventory is the place where we put information about all our managed machine host machines.
+5.Playbook:
+It is an yaml file where we define a set of task that should excute in the host machine.
+---------------------------------------------------------------------------------------------------------------
+
+Inventory:
+
+1. Static Inventory [/etc/ansible/hosts]
+ansible-inventory --graph --> to see the host file in graphical representation.
+
+To perform actions on all the machines which are connected.
+<ip-address> ansible_user=<user-name> ansible_become_user=root
+
+To perform actions on a set of machines based on the grouping.
+
+[group-name]
+<ip-address> ansible_user=<user-name> ansible_become_user=root
+
+ex: 172.31.35.172 ansible_user=ec2-user ansible_become_user=root
+
+Same machines can be present in the different groups
+---------------------------------------------------------------------------------------------------------------
+Ad-Hoc Commands:
+
+Syntax:
+ansible <hosts> -m <module> -a <arguments>
+
+Examples:
+
+ansible all -m ping --> To ping all the host machines
+ansible all -m shell -a "touch f1 f2"
+
+m=module
+a=aurgmets
+
+ansible all -m ping --> All the instances are connected and in working conditions.
+ansible <ip-address> -m ping -->To check weather a perticular machine is connected, perform action on a
+perticular machine
+ansible all -m <group-name> ping --> All the instances are connected and in working conditions.
+ansible <group-name> -m shell "touch t1" --> To create a file in particular group
+---------------------------------------------------------------------------------------------------------------
+Playbooks:
+In each playbook there may be n number of plays and inside an play there may be n number of tasks.
+but task can have only one module inside
+1. Simple Playbook:
+
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: wget
+    yum:
+      name: wget
+      state: present
+      update_cache: yes
+
+1)ansible-playbook <playbook-name> --> To execute the play book
+  eg: ansible-playbook <simple.yaml>
+2) ansible-playbook -i hosts <file_name> -- check  --> To check weather the file is executing properly.
+  eg: ansible-playbook -i hosts <simple.yaml> -- check
+In the place of all at the hosts we can menction a individual host machine ip's and also a perticular group name
+that are inside the hosts file.
+---------------------------------------------------------------------------------------------------------------
+State:
+
+present: It will make sure that what ever the package that are mentioned inside the state should be there inside
+the host, if the package is already present it will won't make any change, it will just come out of the host machine.
+
+latest: It will goes and checks the package is present/not if it is present and it will make sure that package
+should be on the latest version.
+
+absent: It will make sure to uninstall those packages that are menctioned inside the host machine.
+
+(yum ansibe module --> search it in google to find document related to state.)
+---------------------------------------------------------------------------------------------------------------
+2. Installing Multiple Packages
+
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: Multiple Packages
+    yum:
+      name: ['wget', 'unzip', 'git']
+      state: present
+      update_cache: yes
+---------------------------------------------------------------------------------------------------------------
+3. Multiple Tasks
+
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: Installing Package
+    yum:
+      name: wget
+      state: present
+      update_cache: yes
+  - name: Create File using Shell Module
+    shell:
+      cmd: "touch shell-module"
+      chdir: /home/ec2-user/
+  - name: Create File using File Module
+    file:
+      path: /home/ec2-user/file-module
+      state: touch
+---------------------------------------------------------------------------------------------------------------
+Ansible Facts:
+On which host the taks should run on based on the facts that are collected by ansible.
+
+ansible all -m setup --> To check the facts gathered by Ansible
+
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: Multiple Packages through YUM
+    yum:
+      name: ['wget', 'unzip', 'git']
+      state: present
+      update_cache: yes
+    when:
+    - ansible_distribution == "RedHat"
+  - name: Multiple Packages through APT
+    apt:
+      name: ['wget', 'unzip', 'git']
+      state: present
+      update_cache: yes
+    when:
+    - ansible_distribution == "Ubuntu"
+---------------------------------------------------------------------------------------------------------------
+Debugging in Ansible:
+
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: Create File using File Module
+    file:
+      path: /home/ec2-user/file-module
+      state: touch
+    when:
+    - ansible_distribution == "RedHat"
+    register: test
+  - name: Print Registered Variable
+    debug:
+      var: test
+---------------------------------------------------------------------------------------------------------------
+Use Register Variable to execute the next task only if the previous has made some changes.
+Inside th file register it will stores all the outputs of the above steps into a variable(eg:test)
+
+The tasks that got executed inside the host machine we can see using debugging module where we will be including
+a debugging module from that we can get the output of the tasks that got executed by using register variable. 
+---------------------------------------------------------------------------------------------------------------
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: Installing Package
+    yum:
+      name: wget
+      state: present
+      update_cache: yes
+    register: var
+    when:
+    - ansible_distribution == "RedHat"   
+  - name: Create File using File Module
+    file:
+      path: /home/ec2-user/file-module
+      state: touch
+    when:
+    - ansible_distribution == "RedHat"
+    - var is changed
+---------------------------------------------------------------------------------------------------------------
+Ansible Tags:
+
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: Installing Package
+    yum:
+      name: wget
+      state: present
+      update_cache: yes
+    tags: wget
+  - name: Create File using Shell Module
+    shell:
+      cmd: "touch shell-module"
+      chdir: /home/ec2-user/
+    tags: shell
+  - name: Create File using File Module
+    file:
+      path: /home/ec2-user/file-module
+      state: touch
+    tags: file
+
+ansible-playbook <playbook>.yaml --tags="<tag1>, <tag2>" --> To execute specific tasks
+ansible-playbook <playbook>.yaml --skip-tags="<tag1>, <tag2>" --> To skip specific tasks
+---------------------------------------------------------------------------------------------------------------
+Dynamic Inventory:
+
+Prerequisites:
+
+1. Install Boto3
+sudo yum install python3-pip -y
+pip install boto3
+
+https://devopscube.com/setup-ansible-aws-dynamic-inventory/
+---------------------------------------------------------------------------------------------------------------
+2. Installing and configuring AWS Cli
+plugin: aws_ec2
+
+regions:
+- ap-south-1
+
+keyed_groups:
+- key: tags
+  prefix: instance_tags
+- key: instance_type
+  prefix: instance_type
+---------------------------------------------------------------------------------------------------------------
+ansible.cfg file changes to be made:
+
+[defaults]
+inventory      = /etc/ansible/aws_ec2.yaml  (path where the file is located)
+[inventory]
+enable_plugins = aws_ec2
+
+ansible-inventory --graph --> To describe the dynamice inventory file that are having hosts.
+---------------------------------------------------------------------------------------------------------------
+When ever we create dynamic inventory if we are using redhat has controller it will ssh by using (ssh ec2-user@ip_adress)
+so that we will be getting error because the user that we are trying to connect the user that is ubuntu that should
+be (ssh ubuntu@ip_address)
+
+ansible <group_name_in_dynamic_iventory> -m ping --extra-vars "ansible_user"=ubuntu --become "--become-user=root"-->AD Hook command
+eg:  ansible instance_tags_Name_host_3 -m ping --extra-vars "ansible_user=ubuntu" --become "--become-user=root"
+---------------------------------------------------------------------------------------------------------------
+
+Ansible Roles:
+Roles are a collection of variables, tasks, files, templates and modules that are used together to perform a singular,
+complex function.
+
+Default Path: /etc/ansible/roles
+
+ansible-galaxy init <role-name> --> To initialize a ansible role
+ 
+test
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+
+sudo yum install tree --> To check the directory or a role dependencies in tree formate.
+When we create a role that consist of defaults, files, handlers, meta, tasks, templates, test, vars directories
+inside an role directory.
+
+1) Tasks
+This consists of list of the tasks that should be get executed inside the host machines.
+
+2) defaults & vars
+These are used to pass values to the tasks if user doesnot pass any value tasks will consider
+defaults directory, if user wants to parameterize the values on that time user can use vars directory to pass values.
+vars will have higher presidence compare to defaults directory if a user is passing values from both the ways
+tasks will consider vars first.
+
+3) Files & templates.
+These both are used to copy files form the controller to the host machines.
+Files are used to copy static files whose values cannot be permanent, where as we can use templates to pass
+parameters to those files in run time using jinja2 formate.
+
+4) Handlers
+These are the secondary tasks that get executed once the competition of the main/primary tasks.
+Where we can call handlers as on when required.
+
+5) meta
+If one role dependent on other roles these can be written inside the meta.
+Meta tasks are a special kind of task which can influence Ansible internal execution or state.
+Meta tasks can be used anywhere within your playbook.
+
+6) tests
+When we want to test something inside our roles then we can use tests.
+
+7) roles:
+If one role executes another role internally we can write them inside the roles.
+
+---------------------------------------------------------------------------------------------------------------
+How to execute task using playbook inside ubuntu machine using ec2 machine as a controller:
+
+- name: play
+  hosts: instance_tags_Name_ubuntu_host
+  remote_user: ubuntu
+  tasks:
+  - name: shell
+    shell:
+      cmd: rm f1 f2 f3
+      chdir: /home/ubuntu/
+
+---------------------------------------------------------------------------------------------------------------
+
+(tasks/main.yaml)
+
+- name: To install wget
+  yum:
+    name: "{{ package }}"
+    state: "{{ present }}"
+    update_cache: yes
+  when:
+  - ansible_distribution == "RedHat"
+----
+(vars/main.yaml)
+
+package: wget
+present: present
+
+---
+yaml file to execute the role created (eg:vijay)
+User should write a playbook to execute a role.
+
+- name: role
+  hosts: all
+  become: true
+  roles:
+   /home/ec2-user/<role_name>
+
+If the role was created at the default path /etc/ansible/ no need to give the path where as it get's created
+some other path then we need to give the full path.
+We can execute multiple roles in a single playbook execution file.
+---------------------------------------------------------------------------------------------------------------
+Docker installation is inside the ansible folder in laptop
+---------------------------------------------------------------------------------------------------------------
+Things To Study:
+
+Ansible Tower
+(It's an web based services where we can run ansible services inside the enterprise)
+It is a web based solution that makes ansible very easy to all use for all kind of IT teams.
+Allows you to access and allows sharing of SSH credentials without someone being able to transfer those credentials.
+
+
+Ansible Vault
+ansible vault that allows you to keep sensitive data such as passwords or keys in encrypted file, rather then in
+a plaintext in playbook or roles.
+
+commands:
+1) ansible-vault create <file_name> --> To create a file with encrypted formate.
+2) ansible-vault view <file_name> --> To view the encrypted file.
+3) ansible-vault edit <file_name> --> To edit the encrypted file.
+4) ansible-vault encrypt <file_name> --> To encrypt the existing file.
+5) ansible-vault decrypt <file_name> --> To decrypt the encrypted file.
+6) --ask-vault-pass --> To provide password while running the playbook.
+7) --vault-password-file --> To pass avault password through file.
+
+- name: Play
+  hosts: all
+  become: true
+  tasks:
+  - name: Create File using File Module
+    git:
+      repo: https://vijay:Viji@7026@github.com/vijaygovardhan/devops_coaching.git
+      dest: /home/ec2-user/git-clone
+---------------------------------------------------------------------------------------------------------------
+
+eg: for 6th command
+
+- name: Play
+  hosts: all
+  become: true
+  vars_files:
+   - vault-pass.yaml
+  tasks:
+  - name: Create File using File Module
+    git:
+      repo: https://vijay:"{{ password }}"@github.com/vijaygovardhan/devops_coaching.git
+      dest: /home/ec2-user/git-clone
+
+creating a file (name- password.yaml) to pass parameter for password
+
+password: Viji@7026
+
+command to call password
+ansible-playbook <playbook_name> --ask-vault-pass
+
+---------------------------------------------------------------------------------------------------------------
+
+eg: git clone https://github.com/vijaygovardhan/devops_coaching.git --> It's a public repo
+
+git clone https://username:password@github.com/vijaygovardhan/devops_coaching.git --> In general to pass user & passwod
+if it is private inside th url
+
+eg: git clone https://vijay:Viji@7026@github.com/vijaygovardhan/devops_coaching.git
+
+out off syllabus:
+
+Ansible modules
+---------------------------------------------------------------------------------------------------------------
