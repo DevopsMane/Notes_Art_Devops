@@ -1,0 +1,553 @@
+---------------------------------------------------------------------------------------------------------------
+JENKINS
+---------------------------------------------------------------------------------------------------------------
+Jenkins is an open-source automation server that enables developers to build, test, and deploy software continuously.
+It is a popular tool for continuous integration and continuous deployment (CI/CD) in software development.
+
+CICD, or Continuous Integration and Continuous Deployment, is a set of practices and tools
+that can help you automate the process of building, testing, and deploying software
+changes.
+
+Continous delivery: When ever a developer make changes to the code we pull out that code from the repo and we
+continously deploy to the environment for the testing.
+Continous deployment: When ever a developer make changes to the code we pull out that code from the repo and we
+continously delever to the customers/user without testing those codes.All the intermediate testings are taken care
+inside the pipeline.
+
+Not only the deployment we can automate the processes which are taking place in day today life.
+(i,e creating an ec2 instance for a perticular time and wise versa)
+---------------------------------------------------------------------------------------------------------------
+
+01-11-22 - class 1
+---------------------------------------------------------------------------------------------------------------
+Installation:
+
+URL: jenkins.io
+Note: Ubuntu Flavor of Linux is preffered
+---------------------------------------------------------------------------------------------------------------
+Post Installation:
+
+Install git, maven, make
+---------------------------------------------------------------------------------------------------------------
+Triggers: 
+
+1. Build Periodically:
+
+The "Build periodically" trigger allows you to schedule builds at specific intervals using a cron-like syntax.
+You specify a schedule in the form of cron expressions to define when the pipeline should run (e.g., every day at midnight).
+
+2.pollSCM (Polling):
+
+Polling SCM (Source Code Management) involves periodically checking the version control system (e.g., Git, Subversion) for changes.
+Jenkins will compare the current state of the repository with the previous state and trigger a build if there are new commits.
+
+3.Webhook:
+
+A webhook is a mechanism for triggering a build based on external events, typically initiated by a specific action such as 
+a code push or pull request.
+Webhooks are set up in your version control system (e.g., GitHub, GitLab) or other external services. When the configured event 
+occurs, the system sends an HTTP POST request to the Jenkins server.
+
+pipeline {
+    agent any
+    triggers {
+        pollSCM('* * * * *') // Schedule to poll SCM every minute
+    }
+    stages {
+        // Your stages here
+    }
+}
+How to add webhook trigger in github
+step-1 navigate to the repository
+step-2 In the repository settings.
+step-3 navigate to webhook and setup using below type
+https://${jenkins_url}/github-webhook/
+---------------------------------------------------------------------------------------------------------------
+How to store the backup of all the workspace to amazonS3 bucket.
+Install period backup plugin link --> (https://youtu.be/PfA9_LXot7w)
+
+Temporary Directory 
+Path where in thelocal machine backup should store.
+Create a bucked in aws and provide the name and select the perfix name (i,e on what name should the backup stores)
+provide the users access key id, secret key and give enable this location.
+
+How to store the backup of all the workspace on the same machine.
+Download the backup plugin and go to setting and select go to setting, select the directory that you needed to 
+take backup select the formate i,e zip or tar.
+
+manage jenkins --> period backup --> full backup --> cornjob--> s3 bucket name, region --> add aws credentials
+--> enable this location--> storage type.
+---------------------------------------------------------------------------------------------------------------
+02-11-22 - class 2
+---------------------------------------------------------------------------------------------------------------
+Plugins:
+
+CVS - Source code management plugin
+build Monitoring view - To monitor the jenkins master and its agents
+prometheus monitering plugin - 
+Docker Plugins - To integrate docker with jenkins
+kubernetes plugins - To integrate kubernetes with jenkins
+artifactory - To integrate JFORG with jenkins
+Period Backup - To periodically take backup of jenkins server
+blueocean - Modern personalized dashboards
+Multi pipeline - To buid a pipeline for the different branches fo a single project/repo.
+---------------------------------------------------------------------------------------------------------------
+Assignment: Setup Github Webhook Trigger for a Jenkins Job
+Go to the repo go to the settigs of a perticular repo and select webhook and add url of the jenkins
+i,e http://13.127.207.136:8080/webhook-github/
+---------------------------------------------------------------------------------------------------------------
+Using prometheus to moniter the jenkins:
+https://www.youtube.com/watch?v=EWFJem7GUAc
+---------------------------------------------------------------------------------------------------------------
+03-11-22 - class 3
+---------------------------------------------------------------------------------------------------------------
+Java for Redhat Server: sudo yum install java-11-openjdk
+---------------------------------------------------------------------------------------------------------------
+Master-Slave/Agents:
+
+manage jenkins/manage nodes & agents/slave_hosts path to save files/launch method (launch agents via ssh)
+/add credentials/hosts(ip_address)/Private key (.pem)/manually trust key verification strategy.
+
+A single jenkins server to perform all the operations like building packages, testing builds & also environments
+is not a good setup as it will become a single point of failure in such rather then having server performing all the
+operations we can have multiple servers with different environment with jenkins master and slave concept.
+
+Adventages of master and agent.
+1) Distribute the load among the nodes
+2) Avoid single point of failure i,e if one server goes down other will working properly
+3) We can setup the multiple linux flavours as agets.
+
+Perquisite for the agent.
+1) Java should be installed in all the agents.
+2) Propers ssh connection between the master and the slave.
+3) Necessary packages should be installed on the respective agent for running a particular job (i,e maven packages
+needed to run maven commands and build the packages i,e .jar, .war, .ear)
+
+How to secure Jenkins Server/how do you limit users to access resources.
+Go to manage jenkins/manage users add user.
+Matrix Security: (manage jenkins/ configure global security)
+With matrix based security we can configure the permissions for each user individually on what they can perform
+on the server.
+
+Project Based Matrix Authorization Strategy:
+To enable project based security get inside the project and there select Enable project-based security add user.
+(manage jenkins --> security -->Authorization--> drop down menu) --> Before adding any user you should add your user name and give admin
+permissions to that user and add another user for the read permissions then go to the project ther select
+enable project-based security there we need to add user.
+It is an extension to matrix based security where we can setup permissions to individual projects.
+---------------------------------------------------------------------------------------------------------------
+Assignment: Setup Jenkins Master-Slave
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+04-11-22 - class 4
+---------------------------------------------------------------------------------------------------------------
+CICD Setup:
+Once Dev team pushes the code to github the jenkins pipeline job gets triggered it has four stages namely
+
+1) Git gheckout stage.
+In this stage jenkins will pull source code from github once this stage is successful build stage will get triggered
+automatically.
+
+2) Build.
+In this stage the source will be complied and an artifact is generated, after successful compilation of this stage
+push stage gets triggered.
+
+3) Push
+In this stage the artifact will be push to an artifactory/repository, & the deploy stage gets triggered.
+
+4) Deploy
+In this stage the artifact from the artifactory will be deployed to the environment.
+
+Tomcat:
+
+artifact --> war file
+artifactory --> jfrog, nexus
+environment --> Tomcat Server
+
+Kubernetes:
+
+artifact --> Docker Image
+artifactory --> Dockerhub, ECR
+environment --> Kubernetes Pod using Deployment Controller.
+---------------------------------------------------------------------------------------------------------------
+Pipeline:
+
+Checkout --> Build --> Push --> Deploy
+
+A jenkins pipeline is a collection of jobs or stages that brings the software from version controle into the
+hands of end users, this jobs are stages are interlinked with each other and work in a sequence called as
+continuous delivery pipeline.
+---------------------------------------------------------------------------------------------------------------
+Difference between declerative pipeline and scripted pipeline
+Based on yaml syntax				based on groovy syntax
+Provide simpler and more structured syntax	More felxible and controle over pipeline
+Easy to undrstand 				more complex to understand
+starts with pipeline				starts with node
+---------------------------------------------------------------------------------------------------------------
+
+CICD Pipeline
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Git Checkout Stage') {
+            steps {
+                echo 'This is Git Checkout Stage'
+            }
+        }
+        stage('Build Stage') {
+            steps {
+                echo 'This is Build Stage'
+            }
+        }
+        stage('Push Stage') {
+            steps {
+                echo 'This is Push Stage'
+            }
+        }
+        stage('Deploy Stage') {
+            steps {
+                echo 'This is Deploy Stage'
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------------
+Pipeline with Agents
+
+pipeline {
+    agent none
+
+    stages {
+        stage('Master') {
+            agent {label 'master'}
+            steps {
+                sh 'touch master'
+            }
+        }
+        stage('Agent') {
+            agent {label 'tomcat'}
+            steps {
+                sh 'touch agent'
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------------
+Pipeline with Trigger
+
+pipeline {
+    agent none
+
+    triggers {
+        pollSCM '* * * * *'
+    }
+
+    stages {
+        stage('Master') {
+            agent {label 'master'}
+            steps {
+                sh 'touch master'
+            }
+        }
+        stage('Agent') {
+            agent {label 'tomcat'}
+            steps {
+                sh 'touch agent'
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------------
+Assignment: Setup Email Notification with jenkins Job
+---------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+05-11-22 - class 5
+---------------------------------------------------------------------------------------------------------------
+Continuous Integration: is a development practice that requires developers to integrate code
+into a shared repository several times a day. Each check-in is then verified by an automated build,
+allowing teams to detect problems early. By integrating regularly, you can detect errors quickly,
+and locate them more easily.
+
+Continuous Delivery: Continuous delivery picks up where continuous integration ends.
+CD automates the delivery of applications to selected infrastructure environments.
+Most teams work with multiple environments other than the production, such as development
+and testing environments, and CD ensures there is an automated way to push code changes to them.
+
+Continuous Deployment: Continuous deployment goes one step further than continuous delivery.
+With this practice, every change that passes all stages of your production pipeline is released
+to your customers. There's no human intervention, and only a failed test will prevent a new change
+to be deployed to production.
+---------------------------------------------------------------------------------------------------------------
+
+Pipeline with Parallel Stages:
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Stage 1') {
+          parallel {
+            stage('Stage 1 - A') {
+              steps {
+                echo 'Stage 1 - A'
+                sh 'sleep 5'
+              }
+            }
+            stage('Stage 1 - B') {
+              steps {
+                echo 'Stage 1 - B'
+                sh 'sleep 5'
+              }
+            }
+            stage('Stage 1 - C') {
+              steps {
+                echo 'Stage 1 - C'
+                sh 'sleep 5'
+              }
+            }
+          }
+        }
+        stage('Stage 2') {
+            steps {
+                echo 'This is Stage 2'
+                sh 'sleep 5'
+            }
+        }
+        stage('Stage 3') {
+            steps {
+                echo 'This is Stage 3'
+                sh 'sleep 5'
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------------
+Pipeline With Parallel Steps
+When two stages are independent from each other which are not dependent on the output of each step then we can 
+run multiple stages at a time to optmize our pipeline (to save time)
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Stage 1') {
+            steps {
+              parallel (
+                    step1:{
+                      echo 'This is step 1'
+                      sh 'sleep 5'
+                    },
+                    step2:{
+                      echo 'This is Step 2'
+                      sh 'sleep 5'
+                    },
+                    step3:{
+                      echo 'This is Step 3'
+                      sh 'sleep 5'
+                    }
+              )
+            }
+        }
+        stage('Stage 2') {
+            steps {
+                echo 'This is Stage 3'
+                sh 'sleep 5'
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------------
+CICD pipeline
+
+pipeline {
+    agent {label 'tomcat'}
+
+    stages {
+        stage('Git Checkout Stage') {
+            steps {
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/artisantek/java-example.git'
+            }
+        }
+        stage('Build Stage') {
+
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage('Push Stage') {
+            steps {
+                echo 'This is Push Stage'
+            }
+        }
+        stage('Deploy Stage') {
+            steps {
+                sh 'sudo cp target/*.war /opt/tomcat/apache-tomcat-9.0.68/webapps/'
+            }
+        }
+    }
+}
+
+YouTube link for dploying application to docker - https://www.youtube.com/watch?v=nMLQgXf8tZ0
+---------------------------------------------------------------------------------------------------------------
+pipeline {
+    agent none
+    stages {
+        stage('GIT Checkout') {
+             agent any
+            steps {
+                git credentialsId: 'github', url: 'https://github.com/manjunathsvec/java-example.git'
+             }
+        }
+        stage('Build Docker Image'){
+             agent any
+           steps{
+                sh 'docker build -t manjunathsvec/manjunathrepo:javatest3 .'
+            }
+        }
+        stage('Push Docker Image'){
+             agent any
+          steps{
+              withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+              sh "docker login -u manjunathsvec -p ${dockerhub}"
+               } 
+             sh 'docker push manjunathsvec/manjunathrepo:javatest3'
+            }
+        }
+        stage('Kubernetes Deployment'){
+             agent any 
+          steps{
+             sh 'kubectl apply -f DeploymentService.yml'
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------------
+
+Parametrized jobs - https://youtu.be/EDGo77m27F4, https://www.youtube.com/watch?v=k0gnxnf3Rdw
+Some of the important parameters are:
+1) Boolean parameter:
+2) String parameter:
+3) Password parameter: Database.
+4) Choice parameter:
+Instead of hardcoring the barnch we can pass multiple branches while building.
+branch= /${GIT_Branch} GIT_Branch-->choice parameter name.
+5) Extended choice parameter:
+Before building it downl the extended choice parameter plugin.
+6) File parameter:
+To print the parameters that are passed while building.
+echo "server=> " %Server%
+echo "Browser=> " %Browser%
+---------------------------------------------------------------------------------------------------------------
+
+Multi brach pipeline: 
+Through Multibranch pipeline we can create a pipeline for each branch in a repository. For creating job for each
+branch jenkinsfile should be present inside each branch.
+Prerequisite:
+plugins:
+1) Multi pipeline.
+2) Multibranch scan webhook trigger.
+
+youtube -  https://www.youtube.com/watch?v=fo36b23cpIU
+document - https://valaxytech.medium.com/multibranch-pipeline-on-jenkins-with-webhook-a65decede4f8
+---------------------------------------------------------------------------------------------------------------
+
+JFROG
+
+Once the build is done the artifacts will be created in jfrog repo you can user repo URL to download artifact
+to the instance by using wget command or we can use jfrog CLI.
+URL to download artifact is http://iP_address:8081<artifact_URL>
+
+URl: https://github.com/artisantek/jfrog-installation-ubuntu.git
+
+Initial Setup
+
+username: admin
+password: password
+---------------------------------------------------------------------------------------------------------------
+SonarQube:
+We cannot stop and start sonarqube using systemctl command and with root user as well, you should be a normal user.
+
+Quality gates in sonarqube
+
+SonarQube checks for.
+1) Bugs
+2) Vulnerabilitys
+3) Security Hotspots
+4) Debt
+5) Code Smells
+6) Duplicate lines.
+
+We can set quality gates as well rather then the defaults one.
+
+URL: https://github.com/artisantek/sonarqube-installation-ubuntu.git
+
+Initial Setup
+
+username: admin
+password: admin
+
+Method 1 (Normal medhod directly from sonarqube repo)
+make sure to remember the project name the same same name we should mection inside the pipeline.
+
+step 1: Select the repo there local
+step 2: Generate the token
+step 3: Selecte the project (i,e maven, gradel, .NET, other)
+step 4: It will provide the set of commands that we can copy and execute those commands then it will directly 
+uploads the war file to sonarqube.
+step 5: Get inside the pom.xml file is present and paste the command thare.
+
+Method 2
+
+Downl SonarQube Scanner for jenkins plugin
+
+step 1: Go to Global tool configuration sonarQube scanner should be installed on the server where you are running
+the test this installation can be done by jenkins itself provide a name & select the version & save the configuration.
+step 2: In configure systems go to sonarQube server and make shure to enable the environment variables
+add sonarqube add name the name which is provided here the same name should be given inside the pipeline
+step 3: Server URL
+step 4: Add Server authentication token that we are generated
+---------------------------------------------------------------------------------------------------------------
+Jenkinsfile:
+The jenkins pipeline can be written in a text file called as jenkinsfile, with the help of jenkins file we can
+execute your jenkins pipeline job.
+
+Default Name: Jenkinsfile
+
+Assignment: Work on Parameterized Jenkins Jobs
+---------------------------------------------------------------------------------------------------------------
+Various actions that can preformed by maven (For each step there is an command that starts with mvn)
+1) Maven can package.
+2) maven can run test cases if it is inside the pom.xml file.
+3) maven can verify the codse (sonar:sonar).
+4) maven can deploy artifacts to artifactory if it is integrated.
+5) maven can deploy artifacts to tomcat.
+---------------------------------------------------------------------------------------------------------------
+Steps that can perform in build step:
+steps that can perform in post built actions:
+---------------------------------------------------------------------------------------------------------------
+pipeline{
+    agent {label 'jfrog'}
+    stages{
+       stage('Git Checkout Stage'){
+            steps{
+                git branch: 'main', url: 'https://github.com/artisantek/sonarqube-example.git'
+            }
+         }        
+       stage('Build Stage'){
+            steps{
+                sh 'mvn clean install'
+            }
+         }
+        stage('SonarQube Analysis Stage') {
+            steps{
+                withSonarQubeEnv('sonarqube') { 
+                    sh "mvn clean verify sonar:sonar -Dsonar.projectKey=sonar-test"
+                }
+            }
+        }
+    }
+}
+
+
