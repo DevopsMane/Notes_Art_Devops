@@ -1,0 +1,800 @@
+----------------------------------------------------------------------------------------------------------------------
+Cheet sheet - https://zerotomastery.io/cheatsheets/terraform-cheat-sheet/
+export TF_LOG_PATH=terraform.log-->comand will export the terraform logs
+----------------------------------------------------------------------------------------------------------------------
+Terraform 
+terraform version: 1.3.5
+aws version: 4.5.0
+----------------------------------------------------------------------------------------------------------------------
+Infrastructure As Code [IAC]:
+It is an open source IAC tool developer by hashicrop and is used to plan, apply and destroy the infrastructure using
+HCL (Hashi crop configuration language)
+It's an IAC tool where we can create our own infrastructure rather then going to the console and manually doing it we
+can create our own infrastructure with a code.
+These files should end with an extension of .tf.
+----------------------------------------------------------------------------------------------------------------------
+Two types of terraform versions:
+1. open source
+2. Terraform cloud
+----------------------------------------------------------------------------------------------------------------------
+Adventages of terraform:
+1) Plannability:
+With terraform we can plan the changes before actually modifying the infrastructure.
+2) Reusability:
+Same terraform code can be reused for multiple environments or multiple teams by changing the parameters.
+---------------------------------------------------------------------------------------------------------------------
+Installation:
+
+Step1: Download the Zip archive of Terraform open source version [terraform.io]
+
+Step2: Extract the zip file to your system and copy it to some folder
+
+Step3: Add the path of Terraform executable file[terraform.exe] to the system
+environment variables
+----------------------------------------------------------------------------------------------------------------------
+Identifiers in terraform block: 
+In Terraform, an identifier is a unique name used to identify a specific resource or module within a Terraform
+configuration file.
+----------------------------------------------------------------------------------------------------------------------
+Terraform life cycle:
+1) Terraform init:
+Terraform init command is used to initialize a working directory containing terraform configuration files we can run
+terraform init multiple times.
+Terraform init operations:
+a) Initialize the backend.
+b) Initialize the provider plugin.
+c) Initialize the child module.
+
+2) Providers:
+Terraform uses a plugin based architecture called providers to support tools of infrastructure and service provider the
+the terraform init command downloads & installs providers.
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+3) Terraform plan:
+It is a command used to create an execution plan but it will not make any changes to the infrastructure this command
+will scan all the (.tf) files in the directory and create an execution plan.
+
+commands:
+terraform plan --> To check an execution plan.
+terraform plan --out <file_name> --> To save execution plan as a file, this is a terraform readable file.
+
+4) Terraform apply:
+This command used to apply the changes from the configuration file to our cloud provider.
+
+commands:
+terraform apply --> apply the changes.
+terraform apply --auto-approve --> To automatically apply the changes.
+terraform apply <file_name> --> apply the file
+
+5) Terraform destroy:
+The Terraform destroy command used to destroy the terraform managed infrastructure.
+
+commands:
+terrafrom destroy --> To destroy terraform managed infrastructure
+terrafrom destroy -target=<resource_type>.<resource_name> --> To destroy a perticular resource.
+----------------------------------------------------------------------------------------------------------------------
+Terraform validate:
+It is used to check the syntax of the configuration file.
+----------------------------------------------------------------------------------------------------------------------
+variables:
+variables serves as parameters for terraform configuration file they allows the source code to be customize with
+out altering it and make them reusable.
+
+variable "<variable_name>" {
+  discription = "<This is to let others to understand about this variable>"
+  type = string
+  default = <value> #This is to set default value for the variable.
+----------------------------------------------------------------------------------------------------------------------
+outputs:
+They are used to extract values from terraform configuration files.
+
+command:
+output "<output-name>" {
+value = <resource_type>.<resource_name>.<value>
+}
+eg:
+output "public_ip" {
+  value = aws_instance.instance_1.public_ip
+}
+----------------------------------------------------------------------------------------------------------------------
+Terraform variables:
+1. Input variables:
+2. Output variables:
+----------------------------------------------------------------------------------------------------------------------
+
+Count & Foreach:
+By default a terraform resource block can only create one infrastructure object, if we ever want to create multiple
+object with in a single resource block we can use count and foreach.
+----------------------------------------------------------------------------------------------------------------------
+Resource Dependency:
+Terrafrom has the ability to automatically understand when one resource depends on another by studying the resource
+attributes used. But if we want explicitly menction dependencies between resouces that are not visible to terraform we
+can use depends on aurgments.
+
+depends_on = [<resource_type>.<resource_name>] --> We use brackets that means we can menction multiple values.
+----------------------------------------------------------------------------------------------------------------------
+Data source:
+Data source allows terraform to collect information of infrastructure provisioned outside of terraform or by another
+seperate terraform configuration.
+----------------------------------------------------------------------------------------------------------------------
+Provisioners:
+Terraform provisioners are used to execute scripts or commands on the local machine or on a remote machine.
+For a provisioner to work they require a connection block to run commands or scripts on remote machines.
+Types of provisioners:
+1) File:
+This provisiones is used to copy file or directories from the local to remote machine.
+Syntax:
+resource "aws_instance" {
+  <ec2—instance—creation—detaits>
+  <connection—block>
+  provisioner "file" {
+    source = "<Path-of-file—to-be-copied>" #Local Machine
+    destination = "<Path-where-the-file-has-to-copyed>" #Remote Machine
+  }
+}
+
+2) local-exec:
+This provisioners is used to run commands on a local machine where the terraform is running.
+Syntax:
+resource "aws_instance" {
+  <ec2—instance—creation—detaits>
+  <connection—block>
+  provisioner "file" {
+    source = "<command-to-be-excuted-on-local-machine>" #Local Machine
+  }
+}
+
+3) remote-exec:
+a) inline - To execute a set of commands.
+b) script - copy a file from local machine and execute it on remote machine.
+c) scripts - copy a list of scripts and execute them on the remote machine.
+
+syntax:
+resource "aws _ instance" {
+  <connection—block>
+  provisioner "remote—exec" {
+    inline = [
+      " command1",
+      "command2"
+    ]
+  }
+}
+----------------------------------------------------------------------------------------------------------------------
+Null resource:
+The null resource implement the standard resource life cycle but takes no further action by itself on the infrastructure.
+It can be used as a container for other actions like running provisioners on existing resources.
+
+resource "null _ resource" {
+  <connection—block>
+  <provisioner—btock>
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Alias:
+It is the way of defining multiple configurations for the same provider and select which one to use, it is generally
+used to support multiple regions for same cloud provider.
+
+Syntax:
+
+provider "aws" {
+    region = "ap-south-1"
+}
+
+provider "aws" {
+    alias = "secondary"
+    region = "ap-southeast-1"
+}
+
+resource "<resource-type>" "<resource-name>" {
+    provider = aws.secondary
+    <Resource-Block-Details> # Singapore Region
+}
+
+resource "<resource-type>" "<resource-name>" {
+    <Resourc-Block-Details> # Mumbai Region
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terrafrom settings:
+Terraform block is used to configure the version of terraform, provider version and also used to define the backend.
+
+Syntax:
+
+terraform {				#To write terraform configurations (terraform version)
+  required_version = ">= 0.12"
+
+  required_providers {		#which provider plugin that needed to be supported (provider version)
+    aws = {
+        source = "hashicorp/aws"
+        version = "= 4.4.1" 
+    }
+  }
+  
+  backend "s3" {
+    bucket = "<bucket-name>"
+    region = "ap-south-1"
+    key = "terraform/backend/terraform.tfstate"
+
+    dynamodb_table = "<dynamodb-name>" 
+  }
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_s3_bucket" "s3bucket-for-backend" {
+  bucket = "s3bucket-for-backend-123987"
+  force_destroy = true		#here we use force destroy because if any content present inside the s3, bucket cannot be deleted.
+}
+
+resource "aws_s3_bucket_versioning" "versioning_example" {
+  bucket = aws_s3_bucket.s3bucket-for-backend.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_dynamodb_table" "dynamodb-for-backend" {
+  name             = "dynamodb-for-backend"
+  billing_mode     = "PROVISIONED"		#free tire account
+  read_capacity    = 10				#500 free in free tier
+  write_capacity   = 10				#500 free in free tier
+  hash_key         = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
+
+How many users can read and write simultaneous i,e called as read and write capacity.
+How we can identify the data inside the dynamodb is by using hash key.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform state:
+When ever we apply terraform configuration file a state file will be created in the root module which containes all
+the changes applied to the infrastructure in jason formate.
+If something has maually changes in the cloud terrafrom has the identifies the changes and reconfigure them by comparing
+it to the state file.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Remote state(backend):
+By default teraform uses local backend i,e statefile is created in the root module with remote state terraform writes
+the state data to a remote data store like s3 bucket, terraform cloud etc.
+----------------------------------------------------------------------------------------------------------------------s
+----------------------------------------------------------------------------------------------------------------------
+State Lock:
+Terraform state lock is applied to the statefile to avoid changes from multiple users at the same time.
+DynamoDB table can be used to lock remote statefile.
+
+terraform force-unlock LOCK_ID
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Adventages of remote state:
+1) common statefile within the team.
+2) Safer storage.
+3) Prevents exposer of sensitive data.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+terraform.tfstate:
+
+Different places where we can store state file:
+Amazon s3, google cloud storage, terraform cloud this can provide terraform statelock mechanism.
+There will be no statelock mechanism in source code mechansim tool i,e github, bitbucket.
+
+Procedure for creating infracture in my company: (Check another method)
+We will be storing our configuration files in github repository we pull those configuration files make necessary changes
+indide those files and apply those changes to the infrastructure by sharing common statefile which is located in the
+remote state i,e s3 bucket.
+Once the changes has been made to the configuration file untill you push those changes terrafrom won't make changes
+this mechanism can be done by using terraform cloud which will cost more.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform taints:
+Terraform taints are used to manually mark terrafrom managed resources as tainted, once the resource is marked as tinted
+it will be destroyed and recreated on next apply.
+syntax:
+
+terraform taint <resource-type>.<resource-name> --> To taint a resource 
+terraform untaint <resource-type>.<resource-name> --> To taint a resource
+Commands:
+terraform state list --> To list the resources created by terraform
+terraform state show <resource-type>.<resource-name> --> To get information about a particular resource
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform Templates:
+Terraform templates, also known as Terraform configuration files, are written in the HashiCorp Configuration Language
+and define the infrastructure resources that terraform will create or modify.
+Thses can be avalible in the market place we can make use of them and create infrastructure.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform Import:
+Before doing terraform import we need to write an terraform empty block
+resource "aws_instance" "my_instance" {
+
+}
+The "terraform import" command is used to import existing infrastructure resources into Terraform's state management.
+This allows Terraform to manage and track these resources as if it created them, and allows you to make changes to
+them using Terraform commands.
+command:
+terraform import <RESOURCE_TYPE>.<RESOURCE_NAME> <instance_id>
+terraform import aws_instance.my_instance i-0e13d0eb0a1e83302
+terraform import aws_s3.my_bucket <bucketname in console>
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform Cloud:
+provides additional features and functionality for managing infrastructure with Terraform. It allows teams to
+collaborate on Terraform configurations, use remote state storage, and automate the process of running Terraform.
+* Remote state storage and management:
+* Collaboration and access control: 
+Terraform Cloud allows teams to collaborate on Terraform configurations, with access control and permissions management 
+to ensure that the right people have access to the right resources.
+* Version history and rollback: 
+Terraform Cloud keeps a version history of all changes made to your Terraform configurations, and allows you to easily 
+roll back to previous versions if needed.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform Modules:
+Terraform modules allow for the organization and reuse of Terraform code, making it easier to manage and maintain large
+infrastructure deployments. They can be used to break down a complex infrastructure into smaller, more manageable pieces,
+and can also be used to abstract away common patterns or components of an infrastructure.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform Graph
+The "terraform graph" command is used to generate a visual representation of the resources that Terraform will create
+or modify. This representation is in the form of a directed graph, with resources as nodes and their dependencies as edges.
+The graph can be output to a file in the Graphviz DOT format, which can be viewed using a tool such as Graphviz online.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Terraform Workspace:
+Which is helpfull in creating the n numbeter infrastructures with same configuration file.
+Mainly usefull in creating infrastructure for different environment i,e dev, test, staged and prod which should contain
+similar environment.
+Commands:
+terraform workspace list --> To list workspaces.
+terraform workspace new <workspace_name> --> Create a workspace.
+terraform workspace select <workspace_name> --> To switch to a perticular workspace.
+terraform workspace show --> current workspace you pointed to.
+terraform workspace delete <workspace_name> --> To delete workspace.
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+Link for VPC Creation:
+https://github.com/hashicorp/learn-terraform-locals
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:1
+provider "aws" {
+    region = "ap-south-1"
+}
+resource "aws_instance" "instance-1" {
+    ami = "ami-062df10d14676e201"
+    instance_type = "t2.micro"
+    key_name = "govardhan"
+    tags = {
+        Name = "dev"
+    }
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:2
+provider.tf
+
+resource "aws" {
+  region = "ap-south-1"
+}
+----------------------------------------------------------------------------------------------------------------------
+main.tf
+
+resource "aws_instance" "instance-1" {
+    ami = var.instance_ami
+    instance_type = var.instance_type
+    key_name = var.key_name
+    tags = {
+        Name = var.instance_name
+    }
+}
+----------------------------------------------------------------------------------------------------------------------
+variable.tf
+
+variable "instance_ami" {
+  default = "ami-062df10d14676e201"
+}
+
+variable "instance_name" {
+  default = "dev"
+}
+
+variable "key_name" {
+  default = "govardhan"
+}
+
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+variable "instanec_name" {
+  default = "terraform_instance"
+}  
+----------------------------------------------------------------------------------------------------------------------
+output.tf
+
+output "instance_id" {
+    value = aws_instance.instance-1.id
+}
+
+output "public_ip" {
+    value = aws_instance.instance-1.public_ip
+}
+
+output "private_ip" {
+    value = aws_instance.instance-1.private_ip
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:3
+main.tf
+
+resource "aws_instance" "instance-1" {
+    ami = var.instance_ami
+    instance_type = var.instance_type
+    count = 4
+    key_name = var.key_name
+    tags = {
+        Name = "${var.instance_name}-${count.index +1}"
+    }
+}
+----------------------------------------------------------------------------------------------------------------------
+variable.tf
+
+variable "instance_ami" {
+  default = "dev"
+}
+
+variable "instance_ami" {
+  default = "ami-062df10d14676e201"
+}
+
+variable "key_name" {
+  default = "govardhan"
+}
+
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+variable "instanec_name" {
+  default = "terraform_instance"
+} 
+----------------------------------------------------------------------------------------------------------------------
+output.tf
+
+output "instance_id" {
+    value = aws_instance.instance-1[*].id
+}
+
+output "public_ip" {
+    value = aws_instance.instance-1[*].public_ip
+}
+
+output "private_ip" {
+    value = aws_instance.instance-1[*].private_ip
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:4
+
+resource "aws_instance" "instance_1" {
+  ami = var.insatnce_ami
+  instance_type = var.insatnce_type
+  for_each = toset(var.instance_name)
+  key_name = var.key_pair
+  tags = {
+    Name = each.value
+  }
+  availability_zone = var.availability_zone
+}
+----------------------------------------------------------------------------------------------------------------------
+variable "insatnce_ami" {
+  description = "This is fro menctioning the ami"
+  type = string
+  default = "ami-074dc0a6f6c764218"
+}
+
+variable "insatnce_type" {
+  description = "This is for menctioning the instance_type"
+  type = string
+  default = "t2.micro"
+}
+
+variable "key_pair" {
+  description = "This is for menctioning the key-pair name"
+  type = string
+  default = "govardhan"
+}
+
+variable "instance_name" {
+  description = "This is for menctioning the instace-name"
+  type = list(string)
+  default = ["instance-01","instance-02","instance-03"]
+}
+
+variable "availability_zone" {
+  description = "This is for menctioning the availability_zone"
+  type = string
+  default = "ap-south-1a"
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:5 VPC
+
+provider "aws" {
+    region = "ap-south-1"
+}
+
+resource "aws_vpc" "vpc" {
+  cidr_block       = "10.0.0.0/16"
+  tags = {
+    Name = "my_vpc"
+  }
+}
+resource "aws_subnet" "subnet" {
+    vpc_id = aws_vpc.vpc.id
+    cidr_block = "10.0.1.0/24"
+    map_public_ip_on_launch = "true"
+    availability_zone = "ap-south-1a"
+    tags = {
+        Name = "Public_subnet"
+    }
+}
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "my_igw"
+  }
+}
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+}
+resource "aws_route_table_association" "association" {
+  subnet_id      = aws_subnet.subnet.id
+  route_table_id = aws_route_table.public_rt.id
+}
+resource "aws_security_group" "SSH_allow" {
+  vpc_id      = aws_vpc.vpc.id
+  ingress {
+    description      = "SSH_open"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  tags = {
+    Name = "open_ssh"
+  }
+}
+resource "aws_instance" "instance-1" {
+    subnet_id = aws_subnet.subnet.id
+    security_groups = [aws_security_group.SSH_allow.id]
+    ami = "ami-062df10d14676e201"
+    instance_type = "t2.micro"
+    key_name = "govardhan"
+    tags = {
+        Name = "dev"
+    }
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:6 data
+
+data "aws_instance" "ec2_instance_name" {
+  instance_tags = {
+    Name = <instance_name>
+  }
+}
+
+output "instance_id" {
+  value = data.aws_instance.ec2_instance_name.id
+}  
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:7 most recent ami uploded by a user using data.
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+data "aws_ami" "example" {
+  most_recent      = true
+  owners           = ["679593333241"]
+
+  filter {
+    name   = "name"
+    values = ["Askforcloud*"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:8 Provisioners:
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "terraform-instance" {
+  vpc_security_group_ids = ["sg-0434704125a6179fb"]
+  ami                    = "ami-062df10d14676e201"
+  instance_type          = "t2.micro"
+  key_name               = "oct-2022"
+  tags = {
+    Name = "Provisioner-EC2"
+  }
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+    host = self.public_ip
+    private_key = file("./oct-2022.pem")
+  }
+
+  provisioner "file" {
+    source = "./inline.sh"
+    destination = "/home/ubuntu/inline.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod u+x /home/ubuntu/inline.sh",
+      "sh /home/ubuntu/inline.sh",
+    ]
+  }
+
+  provisioner "local-exec" {
+    command = "echo The public ip of the instance created is ${self.public_ip} > publicip.txt"
+  }
+
+  provisioner "file" {
+    source = "./publicip.txt"
+    destination = "/home/ubuntu/publicip.txt"
+  }
+
+  provisioner "local-exec" {
+    when = destroy
+    command = "echo The resource was destroyed on `date` > destroy.txt"
+    interpreter = [
+      "bash", "-c"
+    ]
+  }
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:9 Null resource:
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+data "aws_instance" "data-instance" {
+  instance_tags = {
+    "Name" = "Provisioner-EC2"
+  }
+}
+
+resource "null_resource" "run-provisioner" {
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+    host = data.aws_instance.data-instance.public_ip
+    private_key = file("./oct-2022.pem")
+  }
+  provisioner "remote-exec" {
+    script = "./script.sh"
+  }
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+eg:10 modules:
+
+module_call/main.tf
+
+module "ec2_instance" {
+    source = "../module/ec2-instance"					#child module located inside the local system.
+    source = "git::<repo_url>//<path-where-module-located>		#child module located in github repo.
+    instance_ami = "ami-062df10d14676e201"
+    instance_name = "dev"
+    key_name = "govardhan"
+    instance_type = "t2.micro"
+    instance_name = "terraform_instance"
+}
+output "instance_id" {
+    value = module.ec2_instance.instance_id
+}
+output "private_ip" {
+    value = module.ec2_instance.private_ip
+}
+output "public_ip" {
+    value = module.ec2_instance.public_ip
+}
+----------------------------------------------------------------------------------------------------------------------
+module/ec2-instance/main.tf
+
+resource "aws_instance" "instance-1" {
+    ami = var.instance_ami
+    instance_type = var.instance_type
+    key_name = var.key_name
+    tags = {
+        Name = var.instance_name
+    }
+}
+----------------------------------------------------------------------------------------------------------------------
+module/ec2-instance/variable.tf
+
+variable "instance_ami" {
+  type = string
+}
+
+variable "instance_name" {
+  type = string
+}
+
+variable "key_name" {
+  type = string
+}
+
+variable "instance_type" {
+  type = string
+}
+
+variable "instanec_name" {
+  type = string
+}
+----------------------------------------------------------------------------------------------------------------------
+module/ec2-instance/output.tf
+
+output "instance_id" {
+    value = aws_instance.instance-1.id
+}
+
+output "public_ip" {
+    value = aws_instance.instance-1.public_ip
+}
+
+output "private_ip" {
+    value = aws_instance.instance-1.private_ip
+}
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
