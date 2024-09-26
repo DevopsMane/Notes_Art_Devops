@@ -4,9 +4,16 @@ kubernetes version: 1.23
 https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_csi_driver.html
 https://waswani.medium.com/integrating-secrets-manager-with-aws-eks-79c93e70c74e
 
-Kubernetes:
-It is an open-source container orchestration platform that automates many of the manual processes
-involved in deploying, managing, and scaling containerized applications.
+Kubernetes
+Kubernetes is a powerful tool for automating the deployment, scaling, and management of containerized applications. 
+It offers features like:
+
+TLS Secrets
+RBAC (Role-Based Access Control)
+Namespaces
+Stateful Sets
+Health Probes
+Environment Secrets
 
 There are 2 types of creating Kubernetes clusters
 1. Bare metal cluster.
@@ -16,9 +23,6 @@ Kubernetes was first developed by google in Golang language now it is managed by
 Cgroups limit the memory and CPU utilization of a container.
 Namespaces where restrict the container so that it can only see how much has been created by a container.
 Kubectl --> (Kubernetes control line commands) To run Kubernetes commands on the cli.
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-10-12-22 - class 2
 ---------------------------------------------------------------------------------------------------------------
 This should be run in the sudo user of the worker nodes
 
@@ -35,7 +39,7 @@ Once the initilisation is done we will be getting the kubeadm joint command wher
 the worker machines to join & comunicate with the master where we will be using for autencialtion purpose 
 and this key will be valid only for 1month after we need to extratc it again.
 
-kube proxy will assigne ip to the containers inside the pods, & Weaveworks will make shure to have an unique ip addresses
+kube proxy will assign ip to the containers inside the pods, & It will make sure to have an unique ip addresses
 for the containers that are in the pods.
 
 kubectl get nodes --> To check all the nodes on the cluster
@@ -75,9 +79,9 @@ It will select on which pod that the containers should be created based on the r
 
 Which runs a never-ending core control loop basically, a controller watches the state of the cluster 
 through the API Server watch feature and, when it gets notified, it makes the necessary changes attempting 
-to move the currentstate towards the desired state.
-in silmple words Which will run a never ending controle loop that will track all the changes that are happening in the cluster 
-and make sure to maintain all the requirements of the user.
+to move the current-state towards the desired-state.
+in silmple words Which will run a never ending control loop that will track all the changes that are happening in the 
+cluster and make sure to maintain all the requirements of the user.
 The relation between controller-manager and api server is api watch mechanism.
 
 Different types of deployment controllers.
@@ -110,7 +114,12 @@ external host and inside the kubernetes cluster and allocates unique ip addresse
 inside the pods.
 ---------------------------------------------------------------------------------------------------------------
 How Ip's are assigned to the pods:
+Each time a pod is created, it can receive a different IP address. This is managed by Kubernetes controllers and the CNI plugin,
+ensuring that IPs are reused efficiently when pods are terminated.
 
++Pods get IPs from a defined subnet using CNI plugins.
++Each pod has a unique IP, allowing for direct communication.
++IP management is dynamic and can change when pods are recreated.
 ---------------------------------------------------------------------------------------------------------------
 Pod Definition File:
 
@@ -129,8 +138,8 @@ Commands:
 kubectl --> Kuberenets controle line command
 kubectl apply -f <file>.yaml --> To apply a configuration in kubernetes
 kubectl get pods --> To list the pods in the cluster
-kubectl get pods <boject-name>-o yaml --> To see the configuration file as output.
-kubectl get pods -0 wide --> Get details of the pods such as pod and container ip addresses
+kubectl get pods <object-name> -o yaml --> To see the configuration file as output.
+kubectl get pods -o wide --> Get details of the pods such as pod and container ip addresses
 kubectl get deploy --> To check the deployer controller we have.
 
 kubectl describe <object-kind> <name> --> To see information about a kubernetes object
@@ -138,13 +147,10 @@ kubectl delete <object-kind> <name> --> To delete a kubernetes object
 ---------------------------------------------------------------------------------------------------------------
 traceout <pod_ip> to connect from one pod to other pod
 ---------------------------------------------------------------------------------------------------------------
-11-12-22 - class 3
----------------------------------------------------------------------------------------------------------------
 Manifest File Fields/kubernetes configuration files:
 
 1. apiVersion:
 It specifies the version of kubernetes api to be used for creating kubernetes objects.It can be v1, apps/v1 etc.
-
 ex: v1, apps/v1 etc
 
 kubectl api-versions --> To list the api versions in kubernetes
@@ -153,7 +159,6 @@ kubectl api-resources --api-group <group_name> --> To check the objects that can
 
 2. kind:
 It specifies the type of kubernetes object to be created it can be pod, service etc.
-
 ex: Pod, Service, Deployment etc
 
 3. metadata:
@@ -203,7 +208,7 @@ Difference between ReplicaSet and ReplicationController:
 
 [ a.ReplicaSet
 supports both set-based & equity based selectors, where it supports all the lasted api-versions.
-When we menction replicaset value as 3 it will make sure that these many number of pods will
+When we mention replicaset value as 3 it will make sure that these many number of pods will
 be running on the worker nodes.
 
 Selector is very important to mention inside the manifest file because how can this replicaset will understand that
@@ -216,12 +221,12 @@ b.ReplicationController.
 supports Equity based selectors its an older version where it suppots only v1 api-version ]
   
 ReplicaSet/ReplicationController
-There are used to create multiple instances of a single pod to acive load balancing and high availability.If any pod gets deleted
-then the controller will recreate the new one.
+There are used to create multiple instances of a single pod to acive load balancing and high availability.
+If any pod gets deleted then the controller will recreate the new one.
 
 Difference between ReplicaSet and ReplicationController:(Re-create update strategy is done by replicaset) 
-Both are used to create multiple replicas of pods but the replicationcontroller only supports equity selectors while the replicaset 
-supports both equity based and set based selectors.
+Both are used to create multiple replicas of pods but the replicationcontroller only supports equity selectors
+while the replicaset supports both equity based and set based selectors.
 ---------------------------------------------------------------------------------------------------------------
 Replicaset:
 A ReplicaSet is a type of controller in Kubernetes, used for ensuring that a specified number of replicas of pods
@@ -253,8 +258,8 @@ kubectl scale <Api-object_name> <object_name> --replicas=5 --> To scale the pods
 ex: kubectl scale rs nginx-deploy --replicas=5 --> To scale the pods
 ---------------------------------------------------------------------------------------------------------------
 Deployment Controller:(Rolling update strategy)
-It is the most common object used to deploying objects in kubernetes.With deployment controller we can efortlessly
-role-out application updates and roll-back the updates without breaking the user experience.
+It is the most common object used to deploying objects in kubernetes.With deployment controller we can effortlessly
+roll-out and roll-back the application updates without breaking the user experience.
 
 apiVersion: apps/v1
 kind: Deployment
@@ -279,26 +284,25 @@ spec:
 
 Commands:
 
-kubectl set image <api-object-name> <object-name> <container-name>=<New-image-name> --record --> To update the image using Deployment Controller
+kubectl set image <api-object-name> <object-name> <container-name>=<New-image-name> --record --> 
+To update the image using Deployment Controller
 ex: kubectl set image deploy nginx-deploy nginx=nginx:1.14 --record 
 
 kubectl rollout history <api-object-name> <object-name>
-ex: kubectl rollout history deploy nginx-deploy --> To check the total recorded hostory of the Controller
+ex: kubectl rollout history deploy nginx-deploy --> To check the total recorded history of the Controller
 
 kubectl rollout undo <api-object-name> <object-name>
 ex: kubectl rollout undo deploy nginx-deploy --> To roll back to a previous version of the application
 
-kubectl rollout undo <api-object-name> <object-name> --to-revision=<Version> --> To roll back to a particular revision number
+kubectl rollout undo <api-object-name> <object-name> --to-revision=<Version> --> 
+To roll back to a particular revision number
 ex: kubectl rollout undo deploy nginx-deploy --to-revision=<Version_number>
 
 kubectl scale <Api-object_name> <object_name> --replicas=5 --> To scale the 
 ex: kubectl scale deploy nginx-deploy --replicas=5 --> To scale the pods
 
 ---------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-12-12-22 - class 4
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
+
 DaemonSet Controller.
 
 Daemonset controller ensures that a pod runs on all the nodes of the cluster if a node is added or reomved from
@@ -381,26 +385,24 @@ Pod phases/pod lifecycle.
 The phase of a pod is a simple high level summery where the pod is in its life cycle.
 
 1. Pending.
-The pod has been accepted by the kubernetes cluster (Api srever) but one or more containers present inside the pod have not yet been started.
+The pod has been accepted by the kubernetes cluster (Api srever) but one or more containers present 
+inside the pod have not yet been started.
 
 2. Running.
 The pod has been scheduled to a node and all the containers have been created and they are upend running.
 
 3. Successed.
-All the containers in the pod have terminated in success and will not be restarted. (Task inside the container is completed
-and it will no more get started)
+All the containers in the pod have terminated in success and will not be restarted.
+(Task inside the container is completed and it will no more get started)
 
 4. Failed.
-All the containers in the pod have terminated but atleast one container has termined in failure i,e that the
+All the containers in the pod have terminated but at least one container has termined in failure i,e that the
 container exied non-zero value.
 
 5. Unknown.
 The pod goes to unkown state if the state of the pod couldnot be obtained due to an error in communicating with the node 
 where the pod was running.
 
----------------------------------------------------------------------------------------------------------------
-13-12-22 - class 4
----------------------------------------------------------------------------------------------------------------
 Probes:
 
 Probes are the actions performed by the kubelet which help in monitering and checking the condition of the
@@ -413,22 +415,22 @@ Probe Types:
 
 With readiness probe if the conditions configured in the manifest failed the appcation/pod are not allowed to serve
 external request.
-(Once the pod inside the nod gets non-functional then readiness probe will removes the container inside the pod)
+(Once the pod inside the node gets non-functional then readiness probe will removes the container inside the pod)
 
 2. Liveness Probe:
 Rater the stoping the pods to serve the external request like readiness prob liveness prob in case of failure 
 it kills the container and re-starts it which might helps the application to get back to it's initial healthy state.
 
 Summary
-Both liveness & readiness probes are used to control the health of an
-application. Failing liveness probe will restart the container, whereas failing
-readiness probe will stop our application from serving traffic.
+Both liveness & readiness probes are used to control the health of an application. 
+Failing liveness probe will restart the container,
+whereas failing readiness probe will stop our application from serving traffic.
 ---------------------------------------------------------------------------------------------------------------
 Configuring Probes:
 
 1. initialDelaySeconds [Default-0, Min-0]:
 The number of seconds between the container starts and firt probe action.
-(How much time should probe wait initially befor sending the probe action)
+(How much time should probe wait initially before sending the probe action)
 
 2. timeoutSeconds [Default-1, Min-1]:
 It is the number of seconds the probe waits for a responce from pod before assuming failure.
@@ -626,10 +628,7 @@ If bothstartup and liveness probes are set after container creation kubelet will
 if startup probe successed the liveness probe takes over further actions.
 If startup probe fails the pod is restarted then the cycle is repeated it is an extra layer of check for the pods.
 ---------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-14-12-22 - class 5
----------------------------------------------------------------------------------------------------------------
+
 Service:
 In kubernetes pods can communicate with each other by default without any confirmation by using internal ip_addresses
 assigned by kube proxy, this ip addresses are volatile(Keeps on changing) in nature.
@@ -683,7 +682,7 @@ the pods that containing application by getting inside the container.
 ---------------------------------------------------------------------------------------------------------------
 2. NodePort:
 
-With noteport service we can expose pods in the cluster to the outside world
+With nodeport service we can expose pods in the cluster to the outside world
 
 Range: 30000-32767
 
@@ -777,12 +776,10 @@ out of syllabus
 1) port forwading:
 kubectl port-forward serivces/nginx-services <port on which it is working>:<port to which to be forwarded>
 
-2) To get the nod ip
+2) To get the node ip
 minikube ip -p local-cluster 
 ---------------------------------------------------------------------------------------------------------------
 Image: artisantek/k8s-helloworld
----------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
 15-12-22 - class 6
 ---------------------------------------------------------------------------------------------------------------
 Manually Scheduling Pods:
