@@ -979,9 +979,7 @@ Softrule: --> The labeling conditions should be meet to create a pod on a pertic
 that are mentioned are not met then the scheduler will create pod on any one of the working node inside the cluster
 based on the resource availability inside the nodes.
 ---------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-16-12-22 - class 7
----------------------------------------------------------------------------------------------------------------
+
 Pod Affinity and Anti Affinity: (good explaination: https://youtu.be/I7t57_tQBz4)
 
 With podaffinity and antiaffinity we can define wether a pod should or shouldnot be scheduled on to a perticular
@@ -1139,9 +1137,7 @@ spec:
     value: w1
     effect: NoSchedule
 ---------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-16-12-22 - class 8
----------------------------------------------------------------------------------------------------------------
+
 Kuberenetes Volumes:
 
 It is a directory that is attached to a pod and mounted to one or more containers inside a pod.
@@ -1425,9 +1421,7 @@ kubectl patch service my-app -p '{"spec:{"selector":{"version":"v2.0.0"}}}'
 Typically, a canary strategy gradually deploys a new application version to the Kubernetes cluster
 testing it on a small amount of live traffic.
 ---------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------------------
-20-12-22 - class 9
----------------------------------------------------------------------------------------------------------------
+
 Environment Variables:
 
 apiVersion: v1
