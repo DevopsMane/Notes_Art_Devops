@@ -1,8 +1,7 @@
 ------------------------------------------------------------------------------------------------------------------------
 Cloud
-Cloud computing is the delivery of computing services—including servers, storage,
-databases, networking, software, analytics, and intelligence—over the Internet
-pay for what you use.
+Cloud computing is the delivery of computing services—including servers, storage, databases, networking, software,
+analytics, and intelligence—over the Internet pay for what you use.
 ------------------------------------------------------------------------------------------------------------------------
 
 Diffrent types of Cloud computing technology
@@ -24,8 +23,8 @@ Different types of cloud computing
 Only infrastructure is provided by aws every thing is to be maintained by use.(eg:Ec2 instance)
 
 2) PaaS (Platforms as a service)
-Everything will be taken care by aws i,e scaling up and scaling down the infrastructure based on requirement you need to 
-deploy your application (eg:Elastick beanstalk)
+Everything will be taken care by aws i,e scaling up and scaling down the infrastructure based on requirement +
+you need to deploy your application (eg:Elastick beanstalk)
 
 3) SaaS (Software as a service)
 A ready made software you pay for what you use, no need to take care of infrastructure.
@@ -37,14 +36,14 @@ Region
 A cluster of data centers are peresent where we can connect and work on it.
 
 Availability Zones
-They are physically seperated locations and are connected with high bandwidth and low latency cables so one of them goes
-down the remaining will be working.
+They are physically seperated locations and are connected with high bandwidth and low latency cables
+so one of them goes down the remaining will be working.
 
 Edge locations
-Rather then going to region to serve the use for an user the edge locations will store the most used data from that
-perticular location.
-When ever the user access the date it will first check in the edge locations which stores data less time if it is not
-available then it will search in the edge caches which will stores data for the longer period.
+Rather then going to region to serve the use for an user the edge locations will store the most used data 
+from that particular location.
+When ever the user access the data it will first check in the edge locations which stores data less time 
+if it is not available then it will search in the edge caches which will stores data for the longer period.
 
 Check for the number of regions, edge locations, edge cache.
 ------------------------------------------------------------------------------------------------------------------------
@@ -56,9 +55,10 @@ These are the permission given for the users to access the aws account.
 These can also use to give permissions for the roles.
 
 Roles
-These are the permissions given to communicate once resource to another resource i,e ec2 to access the s3 bucket.
+These are the permissions given to communicate one resource to another resource. 
+i,e ec2 to access the s3 bucket.
 
-The best pratice is to creat the user account and use that account to access the aws account.
+The best pratice is to create the user account and use that account to access the aws account.
 
 Different types of services
 1) Global service.
@@ -69,13 +69,13 @@ ECS, Elastic beanstalk, cloud watch, ec2.
 Different types of policies
 1) Identity based policy.
 1-a) Aws managed policy. (Total 989 policies)
-These policies are managed by the aws we cannot chnage those permissions we can only read those policies
+These policies are managed by the aws we cannot change those permissions we can only read those policies
 1-b) Custom Policy.
 The polices that are created by the users and managed by the users
 1-c) Inline policy
 These policy can be applicable for a pericular user. Thse can be added to a user by going to the user page.
-These polices are created & managed by the users. The inline polices are specified for the same user we cannont use for
-other users.
+These polices are created & managed by the users. The inline polices are specified for the same user 
+we cannont use for other users.
 
 ARN - AWS Resource Number.
 An AWS IAM (Identity and Access Management) custom policy consists of several
@@ -94,20 +94,22 @@ All these components are defined in a JSON format and combined to form the polic
 
 2) Resource based policy.
 We want give permissions to access once resource to another resource inside the aws we can use resourced policy.
-Once the creation of role is done we need to attach those roles to the services i,e EC2 instance for going to the actions.
+Once the creation of role is done we need to attach those roles to the services.
+ i,e EC2 instance for going to the actions.
 
 3) Session based policy.
-These are the permissions that are given to an user to access a resource for a given specfic time where we should he use
-the session token to access the resources.
+These are the permissions that are given to an user to access a resource for a given specfic time where 
+we should he use the session token to access the resources.
 
 Assume role (Both should be performed)
 Through concole
-At the right corner scroll down the ID and select switch role there we need to menction the role arn ID and the user ID number
-and the identity name.
+At the right corner scroll down the ID and select switch role there we need to meantion the 
+role arn ID and the user ID number and the identity name.
 
 Through CLI
 aws sts assume-role role-arn <arn-ID> --role-session-name <session_name> --> Enter this commnad
-A temperary Acess keys, Secrete keys, session token gets automatically created there are 2 methods to set this access, secret
+A temperary Acess keys, Secrete keys, session token gets automatically created there are 2 methods
+to set this access, secret
 keys
 a) aws configure.
 b) By setting them as environment variables
@@ -132,8 +134,8 @@ export AWS_SESSION_TOKEN=
 }
 ------------------------------------------------------------------------------------------------------------------------
 MFA (Multi Factor Authentication)
-An extra layer of security for the aws account where user should provide the code that are getting generated for each 
-30 seconds while logging in.
+An extra layer of security for the aws account where user should provide the code that are getting generated 
+for each 30 seconds while logging in.
 
 Applications that are supports - Microsoft Authenticator, Google Authenticator, Duo Mobiles.
 ------------------------------------------------------------------------------------------------------------------------
@@ -147,11 +149,13 @@ one user should access only one s3 bucket.
 Cloudwatch:
 It will monitors the aws services based on the metrics.
 We can setup alarms.
-Using this we can use them for SnS, set autoscalling, add instance and take some actions i,e to stop instance, reboot the instance,
+Using this we can use them for SnS, set autoscalling, add instance and take some actions 
+i,e to stop instance, 
+reboot the instance,
 terminate instances.
 
-cloudwatch-->alarms-->In alarms-->create alarm-->select the metric (EC2)--> pre-instance metrics--> select on which bases
-alarm should be triggered--> In the last we can setup actions.
+cloudwatch-->alarms-->In alarms-->create alarm-->select the metric (EC2)--> pre-instance metrics--> 
+select on which bases alarm should be triggered--> In the last we can setup actions.
 
 Cloudwatch has 3 phases
 1) In alaram.
@@ -168,6 +172,7 @@ Capture management operations performed on your AWS resources.
 2) Data events
 Log the resource operations performed on or within a resource.
 When ever some user add or delete objects to s3 bucket.
+
 3) Insight events.
 Identify unusual activity, errors, or user behavior in your account.
 To read trails/logs copy those and open it in json viwer inside the chrome.
@@ -175,7 +180,7 @@ To read trails/logs copy those and open it in json viwer inside the chrome.
 Cloudwatch logs: [/var/logs/messages]
 What are the things that are performed inside the ec2 instance we can moniter them using cloudwatch logs.
 ------------------------------------------------------------------------------------------------------------------------
-Cloudtrail [/var/logs/messages]:Which is exports the logs from an ec2 machine ans dtore in s3 bucket.
+Cloudtrail [/var/logs/messages]:Which is exports the logs from an ec2 machine and store in s3 bucket.
 
 Which is used to moniter the aws console which user has performed what actions.
 By default it stores 90days, these are being stored in event history.
@@ -207,8 +212,8 @@ When ever we want to schedule a task that to stop, start, reboot instance we can
 How to trigger a alarm once the instance gets teminated in eventbridge.
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
-When ever we are working on the same netwrok we can use private Ip if both the aws server and the system is on different
-networks the we should be using public Ip's so that we can connect to the resource.
+When ever we are working on the same netwrok we can use private Ip if both the aws server and the system is on 
+different networks the we should be using public Ip's so that we can connect to the resource.
 ------------------------------------------------------------------------------------------------------------------------
 VPC (Virtual private cloud): (CIDR.xyz)
 logically isolated section of the AWS Cloud.
